@@ -1,0 +1,18 @@
+from celery import Celery
+from mongodb_handler import MongoDBHandler
+import json
+import time
+app = Celery('tasks', broker='amqp://<%=rabbit_user%>:<%=rabbit_pass%>@<%=rabbit_ip%>/<%=rabbit_vhost%>')
+mongo = MongoDBHandler(['<%=nosql_ip%>'])
+
+@app.task
+def read_test(x):
+    from celery import current_task
+    task_id = current_task.request.id
+    print 'read ' + task_id + " " +  json.dumps({"time": time.time()})
+    return mongo.get_element_by_timestamp(x)
+
+@app.task
+def write_test(x):
+    print 'write'
+    return mongo.perform_write(x)
