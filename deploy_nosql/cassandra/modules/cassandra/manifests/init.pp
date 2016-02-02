@@ -1,14 +1,14 @@
 class cassandra{
 
-  $cassandra_version = "2.0.16"
-  $cassandra_ftp = "ftp://mirror.nl.webzilla.com/apache/cassandra/${cassandra_version}/apache-cassandra-${cassandra_version}-bin.tar.gz"
-  $cassandra_home = "/vagrant/cassandra"
+  $cassandra_version = "2.1.12"
+  $cassandra_ftp = "http://archive.apache.org/dist/cassandra/${cassandra_version}/apache-cassandra-${cassandra_version}-bin.tar.gz"
+  $cassandra_home = "/home/opennebula/cassandra"
   $cassandra_tarball = "cassandra.tar.gz"
-  $seeds_list = "192.168.33.16"
-  $listen_address = "192.168.33.16"
-  $rpc_address = "192.168.33.16"
+  $seeds_list = "10.141.0.138"
+  $listen_address = "10.141.0.138"
+  $rpc_address = "10.141.0.138"
   $cluster_name = "Benchmark Cluster"
-  $path = ['/usr/bin', '/bin']
+  $path = ['/usr/bin', '/usr', '/usr/sbin', '/bin', '/sbin']
 
   file { "$cassandra_home":
     ensure => "directory",
