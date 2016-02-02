@@ -1,3 +1,4 @@
+# generate read or write messages for the broker, with a weighted percentage
 from numpy.random import choice
 from tasks import read_test, write_test
 from mongodb_handler import MongoDBHandler

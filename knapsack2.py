@@ -1,3 +1,4 @@
+# proposes a number of ec2 configurations with the lowest price
 import json
 
 def get_indexes(in_list, in_value):
@@ -42,5 +43,5 @@ def knapsack(freq, node_freq, price):
 node_freq = [213, 470, 744, 1912]
 price = [0.13, 0.26, 0.52, 1.04]
 
-plm = knapsack(2290, node_freq, price)
-print plm
+knap = knapsack(2290, node_freq, price)
+print knap

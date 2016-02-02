@@ -1,4 +1,4 @@
 table_name = 'users'
 keyspace_name = 'benchmark'
-nosql_list = ['cassandra', 'mongodb', 'riak', 'couchdb', 'hbase']
+nosql_list = ['cassandra', 'mongodb', 'riak', 'redis', 'couchdb', 'hbase']
 deploy_folder = 'deploy'

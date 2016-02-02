@@ -2,7 +2,7 @@ class redis{
 
   $bind_ip = "192.168.33.16"
   $redis_version = "2.8.9"
-  $path = ['/usr/bin', '/usr', '/usr/sbin', '/bin']
+  $path = ['/usr/bin', '/usr', '/usr/sbin', '/sbin', '/usr/local/sbin', '/bin']
 
   exec {"add_key":
     command => 'wget -q -O - http://www.dotdeb.org/dotdeb.gpg | sudo apt-key add -',

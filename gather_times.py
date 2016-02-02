@@ -1,3 +1,6 @@
+# work in progress
+# should do stress tests and gather data
+
 from stress_test_read import do_stress_test
 from populate import do_populate
 from operator import itemgetter

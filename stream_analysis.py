@@ -1,3 +1,6 @@
+# will start consuming from rabbit and print the ratio it is consuming at
+# the tasks themselvs are in tasks.py
+
 import subprocess
 import os
 import signal

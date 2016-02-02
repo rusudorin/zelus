@@ -1,7 +1,7 @@
 class couchdb{
 
   $bind_address = "bind_address = 192.168.33.16"
-  $path = ['/usr/bin', '/usr', '/usr/sbin']
+  $path = ['/usr/bin', '/usr', '/usr/sbin', '/sbin', '/usr/local/sbin', '/bin']
 
   exec { "install_couch":
     command => 'sudo apt-get install -y couchdb',

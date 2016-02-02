@@ -1,3 +1,4 @@
+# json from amazon with prices
 ec2_price = {
     "vers": 0.01,
     "config": {

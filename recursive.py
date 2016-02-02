@@ -1,3 +1,4 @@
+# will be replaced with knapsack
 import json
 
 def get_indexes(in_list, in_value):
@@ -48,5 +49,5 @@ def recursive(total_val, node_val, price):
 node_val = [213, 470, 744, 1912]
 values = [0.13, 0.26, 0.52, 1.04]
 
-plm = recursive(2290, node_val, values)
-print plm
+recurs = recursive(2290, node_val, values)
+print recurs

@@ -1,16 +1,16 @@
 class mongodb{
 
-  $bind_ip = "192.168.33.16"
-  $path = ['/usr/bin', '/usr', '/usr/sbin', '/bin']
+  $bind_ip = "10.141.0.137"
+  $path = ['/usr/bin', '/usr', '/usr/sbin', '/bin', '/sbin']
 
   exec { "add_key":
-    command => "sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10",
+    command => "sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927",
     path => $path,
     user => root
   }
 
   exec { "add_mongo_repo":
-    command => 'echo "deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen" | tee /etc/apt/sources.list.d/mongodb-org-3.0.list',
+    command => 'echo "deb http://repo.mongodb.org/apt/ubuntu precise/mongodb-org/3.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list',
     path => $path,
     user => root,
     require => Exec['add_key']
@@ -24,6 +24,7 @@ class mongodb{
 
   exec { 'install_mongo':
     command => 'sudo apt-get install -y mongodb-org',
+    logoutput => on_failure,
     path => $path,
     user => root,
     require => Exec['apt-get_update']
@@ -43,6 +44,6 @@ class mongodb{
     require => File['/etc/mongod.conf']
   }
 
-  exec { 'set_java': command => '/bin/echo "export LC_ALL=C" >> /home/vagrant/.profile' }
+  exec { 'set_java': command => '/bin/echo "export LC_ALL=C" >> /home/opennebula/.profile' }
 
 }

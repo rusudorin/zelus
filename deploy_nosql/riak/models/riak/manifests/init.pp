@@ -1,7 +1,7 @@
 class riak{
 
   $bind_ip = "192.168.33.16"
-  $path = ['/usr/bin', '/usr', '/usr/sbin', '/bin']
+  $path = ['/usr/bin', '/usr', '/usr/sbin', '/sbin', '/usr/local/sbin', '/bin'] 
 
   exec {"add_repo":
     command => 'curl https://packagecloud.io/install/repositories/basho/riak/script.deb.sh | sudo bash',
