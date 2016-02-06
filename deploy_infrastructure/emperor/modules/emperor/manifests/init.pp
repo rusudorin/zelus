@@ -2,10 +2,9 @@ class emperor{
 
   $rabbit_ip = '$templ_rabbit_ip'
   $rabbit_user = '$templ_rabbit_user'
-  $rabbit_pass = '$templ_rabbit_password'
+  $rabbit_pass = '$templ_rabbit_pass'
   $rabbit_vhost = '$templ_rabbit_vhost'
   $path = ['/usr/bin', '/usr', '/usr/sbin', '/bin', '/sbin']
-  $deploy_home = '$templ_rabbit_home'
 
   exec { 'apt-get_update':
     command => 'sudo apt-get update  || true',

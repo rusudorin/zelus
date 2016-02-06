@@ -1,16 +1,16 @@
 class stormtrooper{
 
-  $rabbit_ip = '192.168.33.14'
-  $rabbit_user = 'ndoye'
-  $rabbit_pass = 'usmanescu'
-  $rabbit_vhost = 'asa'
-  $nosql_ip = '192.168.33.44'
+  $rabbit_ip = '$templ_rabbit_ip'
+  $rabbit_user = '$templ_rabbit_user'
+  $rabbit_pass = '$templ_rabbit_pass'
+  $rabbit_vhost = '$templ_rabbit_vhost'
+  $nosql_ip = '$templ_nosql_ip'
   $path = ['/usr/bin', '/usr', '/usr/sbin', '/bin']
-  $deploy_home = '/home/opennebula'
+  $deploy_home = '$templ_deploy_home'
   $script_name = 'stream_analysis.py'
   $tasks_script = 'tasks.py'
-  $handler_name = 'riak_handler.py'
-  $extra_packages = ''
+  $handler_name = '$templ_handler_name'
+  $extra_packages = '$templ_extra_packages'
 
   exec { 'apt-get_update':
     command => 'sudo apt-get update  || true',

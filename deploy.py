@@ -1,4 +1,37 @@
-from deploy_infrastructure import deploy_helper
-import os
+from deploy_infrastructure.deploy_helper import code_deployment, prepare_template, install_deployment
 
-deploy_helper.prepare_template('emperor', 'root', '10.141.0.154', {})
+import config
+import const
+
+# launch an emperor node
+def deploy_emperor(user, host):
+    d = {
+            "templ_rabbit_ip": config.rabbit_ip,
+            "templ_rabbit_user": config.rabbit_user,
+            "templ_rabbit_pass": config.rabbit_pass,
+            "templ_rabbit_vhost": config.rabbit_vhost
+        }
+    copy_deployment('emperor', user, host)
+    prepare_tempalte('emperor', user, host, d)
+    install_deployment('emperor', user, host)
+
+# launch a stormtrooper
+def deploy_stormtrooper(user, host, nosql):
+
+    is nosql not in const.nosql_list:
+        return "Nope"
+
+    d = {
+            "templ_rabbit_ip": config.rabbit_ip,
+            "templ_rabbit_user": config.rabbit_user,
+            "templ_rabbit_pass": config.rabbit_pass,
+            "templ_rabbit_vhost": config.rabbit_vhost,
+            "templ_nosql_ip": nosql_ip,
+            "templ_deploy_home": "/home/" + user,
+            "templ_handler_name": nosql + "_handler.py",
+            "templ_extra_package": ""
+        }
+
+    copy_deployment('stormtrooper', user, host)
+    prepare_tempalte('stormtrooper', user, host, d)
+    install_deployment('stormtrooper', user, host)
