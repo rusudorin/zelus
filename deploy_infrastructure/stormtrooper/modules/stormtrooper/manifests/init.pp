@@ -10,7 +10,11 @@ class stormtrooper{
   $script_name = 'stream_analysis.py'
   $tasks_script = 'tasks.py'
   $handler_name = '$templ_handler_name'
+  $handler_class = '$templ_handler_class'
   $extra_packages = '$templ_extra_packages'
+  $worker_name = '$templ_worker_name'
+  $concurrency = '$templ_concurrency'
+  $consume_queue = '$templ_consume_queue'
 
   exec { 'apt-get_update':
     command => 'sudo apt-get update  || true',
@@ -43,8 +47,8 @@ file { "${deploy_home}/${script_name}":
     require => Exec['install_celery']
   }
 
-  file { "${deploy_home}/${handler_name}":
-    source => "puppet:///modules/stormtrooper/${handler_name}",
+  file { "${deploy_home}/${handler_name}.py":
+    source => "puppet:///modules/stormtrooper/${handler_name}.py",
     owner => root,
     group => root,
     require => Exec['install_celery']

@@ -9,7 +9,7 @@ nb_tasks = 0
 first = True
 timeout = 10
 
-command = 'celery -A tasks worker --loglevel=info'
+command = 'celery -A tasks worker --loglevel=info -n <%=worker_name%> --concurrency=<%=concurrency%> -Q <%=consume_queue%>'
 process = subprocess.Popen(command, stderr=subprocess.PIPE, stdout=subprocess.PIPE, shell=True)
 count = 0
 desired = 7.0

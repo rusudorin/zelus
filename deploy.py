@@ -16,7 +16,7 @@ def deploy_emperor(user, host):
     install_deployment('emperor', user, host)
 
 # launch a stormtrooper
-def deploy_stormtrooper(user, host, nosql):
+def deploy_stormtrooper(user, host, nosql, worker_name, concurrency, queue):
 
     if nosql not in const.nosql_list:
         return "Nope"
@@ -29,7 +29,11 @@ def deploy_stormtrooper(user, host, nosql):
             "templ_nosql_ip": config.nosql_ip,
             "templ_deploy_home": "/home/" + user,
             "templ_handler_name": nosql + "_handler.py",
-            "templ_extra_package": ""
+            "templ_handler_class": config.nosql_classes,
+            "templ_extra_package": "",
+            "templ_worker_name": worker_name,
+            "templ_concurrency": concurrency,
+            "templ_consume_queue": queue
         }
 
     copy_deployment('stormtrooper', user, host)
