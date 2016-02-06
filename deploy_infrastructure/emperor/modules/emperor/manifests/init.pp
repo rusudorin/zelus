@@ -1,11 +1,11 @@
-class rabbitmq_deploy{
+class emperor{
 
-  $rabbit_ip = '192.168.33.18'
-  $rabbit_user = 'ndoye'
-  $rabbit_pass = 'usmanescu'
-  $rabbit_vhost = 'asa'
+  $rabbit_ip = '$templ_rabbit_ip'
+  $rabbit_user = '$templ_rabbit_user'
+  $rabbit_pass = '$templ_rabbit_password'
+  $rabbit_vhost = '$templ_rabbit_vhost'
   $path = ['/usr/bin', '/usr', '/usr/sbin', '/bin', '/sbin']
-  $deploy_home = '/home/opennebula'
+  $deploy_home = '$templ_rabbit_home'
 
   exec { 'apt-get_update':
     command => 'sudo apt-get update  || true',

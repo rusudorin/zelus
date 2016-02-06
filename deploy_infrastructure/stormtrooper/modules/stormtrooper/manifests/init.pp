@@ -1,4 +1,4 @@
-class worker_deploy{
+class stormtrooper{
 
   $rabbit_ip = '192.168.33.14'
   $rabbit_user = 'ndoye'
