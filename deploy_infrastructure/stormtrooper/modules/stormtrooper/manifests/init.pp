@@ -30,42 +30,42 @@ class stormtrooper{
   }
 
 file { "${deploy_home}/${script_name}":
-    content => template("worker_deploy/${script_name}.erb"),
+    content => template("stormtrooper/${script_name}.erb"),
     owner => root,
     group => root,
     require => Exec['install_celery']
   }
 
   file { "${deploy_home}/${tasks_script}":
-    content => template("worker_deploy/${tasks_script}.erb"),
+    content => template("stormtrooper/${tasks_script}.erb"),
     owner => root,
     group => root,
     require => Exec['install_celery']
   }
 
   file { "${deploy_home}/${handler_name}":
-    source => "puppet:///modules/worker_deploy/${handler_name}",
+    source => "puppet:///modules/stormtrooper/${handler_name}",
     owner => root,
     group => root,
     require => Exec['install_celery']
   }
 
   file { "${deploy_home}/const.py":
-    source => "puppet:///modules/worker_deploy/const.py",
+    source => "puppet:///modules/stormtrooper/const.py",
     owner => root,
     group => root,
     require => Exec['install_celery']
   }
 
   file { "${deploy_home}/data_gen.py":
-    source => "puppet:///modules/worker_deploy/data_gen.py",
+    source => "puppet:///modules/stormtrooper/data_gen.py",
     owner => root,
     group => root,
     require => Exec['install_celery']
   }
 
   file { "${deploy_home}/nosql_handler.py":
-    source => "puppet:///modules/worker_deploy/nosql_handler.py",
+    source => "puppet:///modules/stormtrooper/nosql_handler.py",
     owner => root,
     group => root,
     require => Exec['install_celery']
