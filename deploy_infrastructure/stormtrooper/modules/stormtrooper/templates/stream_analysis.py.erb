@@ -1,18 +1,20 @@
 import subprocess
 import os
 import signal
+import xmlrpclib
 from datetime import datetime
 from celery import Celery
 
 app = Celery('tasks', broker='amqp://<%=rabbit_user%>:<%=rabbit_pass%>@<%=rabbit_ip%>/<%=rabbit_vhost%>')
+proxy = xmlrpclib.ServerProxy("http://<%=user_ip%>:1138/")
+
 nb_tasks = 0
 first = True
-timeout = 10
+last_second = 0
 
 command = 'celery -A tasks worker --loglevel=info -n <%=worker_name%> --concurrency=<%=concurrency%> -Q <%=consume_queue%>'
 process = subprocess.Popen(command, stderr=subprocess.PIPE, stdout=subprocess.PIPE, shell=True)
-count = 0
-desired = 7.0
+
 try:
     for line in iter(process.stderr.readline, ''):
         if 'tasks.read_test' in line and 'succeeded' in line:
@@ -23,8 +25,12 @@ try:
     	        first_dt = dt
     	        first = False
     	    diff = dt - first_dt
-    	    ratio = nb_tasks/(diff.seconds + 1.0)
-	    print ratio
+            ratio = nb_tasks/(diff.seconds + 1.0)
+
+            if (diff.seconds + 1) % 5 == 0 and  diff.seconds + 1 != last_second:
+            proxy.report("<%worker_name%>", ratio)
+                last_second = diff.seconds + 1
+
 	if 'tasks.write_test' in line and 'succeeded' in line:
 	    print 'write'
 except KeyboardInterrupt:

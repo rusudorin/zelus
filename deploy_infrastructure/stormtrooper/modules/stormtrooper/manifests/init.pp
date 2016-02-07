@@ -7,7 +7,6 @@ class stormtrooper{
   $nosql_ip = '$templ_nosql_ip'
   $path = ['/usr/bin', '/usr', '/usr/sbin', '/bin']
   $deploy_home = '$templ_deploy_home'
-  $script_name = 'stream_analysis.py'
   $tasks_script = 'tasks.py'
   $handler_name = '$templ_handler_name'
   $handler_class = '$templ_handler_class'
@@ -15,6 +14,8 @@ class stormtrooper{
   $worker_name = '$templ_worker_name'
   $concurrency = '$templ_concurrency'
   $consume_queue = '$templ_consume_queue'
+  $current_ip = '$templ_current_ip'
+  $user_ip = '$templ_user_ip'
 
   exec { 'apt-get_update':
     command => 'sudo apt-get update  || true',
@@ -33,11 +34,18 @@ class stormtrooper{
     require => Exec['install_dependencies']
   }
 
-file { "${deploy_home}/${script_name}":
-    content => template("stormtrooper/${script_name}.erb"),
+  file { "${deploy_home}/stream_analysis.py":
+    content => template("stormtrooper/stream_analysis.py.erb"),
     owner => root,
     group => root,
     require => Exec['install_celery']
+  }
+
+  file { "${deploy_home}/rpc_consumer.py":
+      content => template("stormtrooper/rpc_consumer.py.erb"),
+      owner => root,
+      group => root,
+      require => Exec['install_celery']
   }
 
   file { "${deploy_home}/${tasks_script}":

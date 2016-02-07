@@ -42,5 +42,7 @@ def install_deployment(deployment, user, host, arguments=''):
     install_location = 'sh ' + root_folder + user + '/' + deployment + '/install.sh'
 
     action = change_dir + ';' + apply_template + ';' + install_location
+    if deployment == 'stormtrooper':
+        action += ';' + 'python rpc_consumer.py &'
 
     os.system("ssh " + arguments + " " + user + "@" + host + " " + "'" + action  + "'")

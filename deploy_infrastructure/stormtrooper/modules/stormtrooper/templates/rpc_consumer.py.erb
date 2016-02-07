@@ -1,0 +1,11 @@
+import os
+import xmlrpclib
+from SimpleXMLRPCServer import SimpleXMLRPCServer
+
+def start_consuming():
+    os.system("python stream_analysis.py &")
+    return True
+
+server = SimpleXMLRPCServer(("<%=current_ip%>", 2187))
+server.register_function(start_consuming, "start_consuming")
+server.serve_forever()
