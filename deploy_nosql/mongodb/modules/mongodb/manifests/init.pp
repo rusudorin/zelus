@@ -1,6 +1,7 @@
 class mongodb{
 
-  $bind_ip = "10.141.0.137"
+  $bind_ip = "$templ_bind_ip"
+  $replica_set_name = "$templ_replica_set_name"
   $path = ['/usr/bin', '/usr', '/usr/sbin', '/bin', '/sbin']
 
   exec { "add_key":

@@ -1,4 +1,5 @@
-from deploy_infrastructure.deploy_helper import copy_deployment, prepare_template, install_deployment
+import deploy_infrastructure.deploy_helper as di
+import deploy_nosql.deploy_helper as dn
 
 import config
 import const
@@ -11,9 +12,7 @@ def deploy_emperor(user, host):
             "templ_rabbit_pass": config.rabbit_pass,
             "templ_rabbit_vhost": config.rabbit_vhost
         }
-    copy_deployment('emperor', user, host)
-    prepare_template('emperor', user, host, d)
-    install_deployment('emperor', user, host)
+    di.deploy('emperor', user, host, d)
 
 # launch a stormtrooper
 def deploy_stormtrooper(user, host, nosql, worker_name, concurrency, queue):
@@ -38,6 +37,24 @@ def deploy_stormtrooper(user, host, nosql, worker_name, concurrency, queue):
             "templ_user_ip": config.user_ip
         }
 
-    copy_deployment('stormtrooper', user, host)
-    prepare_template('stormtrooper', user, host, d)
-    install_deployment('stormtrooper', user, host)
+    di.deploy('stormtrooper', user, host, d)
+
+
+# launch a mongodb node
+def deploy_mongodb(user, host, replica_set):
+    
+    d = {
+	"templ_bind_ip": host,
+	"templ_replica_set_name": replica_set
+    }
+
+    dn.deploy('mongodb', user, host, d)
+
+def deploy_redis(user, host):
+
+    d = {
+	"templ_bind_ip": host,
+	"templ_home": "/home" + user,
+    }
+
+    dn.deploy('redis', user, host, d)

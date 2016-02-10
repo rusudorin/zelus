@@ -1,41 +1,49 @@
 class redis{
 
-  $bind_ip = "192.168.33.16"
-  $redis_version = "2.8.9"
+  $bind_ip = "$templ_bind_ip"
+  $redis_home = "$templ_home"
+  $redis_version = "redis-3.0.7"
   $path = ['/usr/bin', '/usr', '/usr/sbin', '/sbin', '/usr/local/sbin', '/bin']
 
-  exec {"add_key":
-    command => 'wget -q -O - http://www.dotdeb.org/dotdeb.gpg | sudo apt-key add -',
-    user => root,
-    path => $path,
-    creates => "/home/vagrant/redis-${redis_version}.tar.gz"
+  exec {"install_make":
+    command => "sudo apt-get install -y make rubygems ; gem install redis",
+    path => $path
   }
 
-  exec { 'apt-get_update':
-    command => 'sudo apt-get update || true',
+  exec {"download_redis":
+    command => "wget http://download.redis.io/releases/$redis_version.tar.gz -O $redis_home/${redis_version}.tar.gz",
+    timeout => 1800,
     path => $path,
-    require => Exec['add_key']
+    creates => "$redis_home/$redis_version.tar.gz",
+    require => Exec['install_make']
   }
 
-  exec { "install_redis":
-    command => 'sudo apt-get install -y redis-server',
+  exec {'unarchive':
+    command => "tar xzf ${redis_home}/${redis_version}.tar.gz -C ${redis_home}",
     path => $path,
-    user => root,
-    require => Exec['apt-get_update']
+    creates => "${redis_home}/${redis_version}",
+    require => Exec['download_redis']
+  } 
+
+  exec {'make':
+    command => "make",
+    path => $path,
+    cwd => "${redis_home}/${redis_version}",
+    require => Exec['unarchive']
   }
 
-  file { "/etc/redis/redis.conf":
+  file {"${redis_home}/${redis_version}/redis.conf":
     content => template("redis/redis.conf.erb"),
     owner => root,
     group => root,
-    require => Exec['install_redis'],
-    notify => Service['redis-server']
+    require => Exec['make']
   }
 
-  service { "redis-server":
-    ensure => "running",
-    enable => "true",
-    require => File['/etc/redis/redis.conf']
+  exec {'run_redis':
+    command => "${redis_home}/${redis_version}/src/redis-server ${redis_home}/${redis_version}/redis.conf &",
+    path => $path,
+    require => File["${redis_home}/${redis_version}/redis.conf"]
   }
 
 }
+

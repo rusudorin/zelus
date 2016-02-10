@@ -1,7 +1,7 @@
 import os
 from string import Template
 
-deployment_options = ['emperor', 'stormtrooper']
+deployment_options = ['mongodb', 'hbase', 'couchdb', 'riak', 'redis', 'cassandra']
 root_folder = '/'
 
 # returns the current folder of the file
@@ -39,11 +39,8 @@ def install_deployment(deployment, user, host, arguments=''):
 
     change_dir = 'cd ' + root_folder + user + '/' + deployment
     apply_template = 'python apply_template.py'
-    install_location = 'sh ' + root_folder + user + '/' + deployment + '/install.sh'
 
-    action = change_dir + ';' + apply_template + ';' + install_location
-    if deployment == 'stormtrooper':
-        action += ';' + 'python rpc_consumer.py &'
+    action = change_dir + ';' + apply_template + ';' 
 
     os.system("ssh " + arguments + " " + user + "@" + host + " " + "'" + action  + "'")
 
@@ -52,3 +49,4 @@ def deploy(deployment, user, host, substitution_dict, arguments=''):
     copy_deployment(deployment, user, host)
     prepare_template(deployment, user, host, substitution_dict)
     install_deployment(deployment, user, host)
+
