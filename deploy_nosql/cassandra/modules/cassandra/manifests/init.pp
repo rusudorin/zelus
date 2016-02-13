@@ -1,12 +1,12 @@
 class cassandra{
 
-  $cassandra_version = "2.1.12"
+  $cassandra_version = "3.3"
   $cassandra_ftp = "http://archive.apache.org/dist/cassandra/${cassandra_version}/apache-cassandra-${cassandra_version}-bin.tar.gz"
-  $cassandra_home = "/home/opennebula/cassandra"
+  $cassandra_home = "/home/$templ_user/cassandra"
   $cassandra_tarball = "cassandra.tar.gz"
-  $seeds_list = "10.141.0.138"
-  $listen_address = "10.141.0.138"
-  $rpc_address = "10.141.0.138"
+  $seeds_list = "$templ_seeds_list"
+  $listen_address = "$templ_listen_address"
+  $rpc_address = "$templ_rpc_address"
   $cluster_name = "Benchmark Cluster"
   $path = ['/usr/bin', '/usr', '/usr/sbin', '/bin', '/sbin']
 
@@ -19,11 +19,11 @@ class cassandra{
     timeout => 1800,
     path => $path,
     creates => "$cassandra_home/$cassandra_tarball",
-    require => File["$cassandra_home"]
+    require => Exec["install_java"]
   }
 
   exec { "add_java_repo":
-    command => "sudo add-apt-repository -y ppa:openjdk/ppa",
+    command => "sudo add-apt-repository -y ppa:openjdk-r/ppa",
     path => $path,
   }
 
@@ -34,7 +34,7 @@ class cassandra{
   }
 
   exec { 'install_java':
-    command => 'sudo apt-get install -y openjdk-7-jdk',
+    command => 'sudo apt-get install -y openjdk-8-jdk',
     path => $path,
     require => Exec['apt-get_update']
   }
@@ -47,43 +47,43 @@ class cassandra{
   }
 
   file { "/var/lib/cassandra":
-    owner => root,
-    group => root,
+    owner => $templ_user,
+    group => $templ_user,
     ensure => "directory",
   }
 
   file { "/var/log/cassandra":
-    owner => root,
-    group => root,
+    owner => $templ_user,
+    group => $templ_user,
     ensure => "directory",
   }
 
   file { "/var/lib/cassandra/data":
-    owner => root,
-    group => root,
+    owner => $templ_user,
+    group => $templ_user,
     ensure => "directory",
   }
 
   file { "/var/lib/cassandra/commitlog":
-    owner => root,
-    group => root,
+    owner => $templ_user,
+    group => $templ_user,
     ensure => "directory",
   }
 
   file { "/var/lib/cassandra/saved_caches":
-    owner => root,
-    group => root,
+    owner => $templ_user,
+    group => $templ_user,
     ensure => "directory",
   }
 
-  exec { 'set_java': command => '/bin/echo "export JAVA_HOME=/usr/lib/jvm/java-1.7.0-openjdk-amd64" >> /home/vagrant/.profile' }
-  exec { 'set_cassandra': command => '/bin/echo "export CASSANDRA_HOME=${cassandra_home}" >> /home/vagrant/.profile' }
-  exec { 'set_path' :command => '/bin/echo "export PATH=\$PATH:\$CASSANDRA_HOME/bin" >> /home/vagrant/.profile' }
+  exec { 'set_java': command => '/bin/echo "export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64" >> /home/$templ_user/.profile' }
+  exec { 'set_cassandra': command => '/bin/echo "export CASSANDRA_HOME=${cassandra_home}" >> /home/$templ_user/.profile' }
+  exec { 'set_path' :command => '/bin/echo "export PATH=\$PATH:\$CASSANDRA_HOME/bin" >> /home/$templ_user/.profile' }
 
   file { "${cassandra_home}/conf/cassandra.yaml":
     content => template("cassandra/cassandra.yaml.erb"),
-    owner => vagrant,
-    group => vagrant,
+    owner => root,
+    group => root,
     require => Exec['unarchive']
   }
 

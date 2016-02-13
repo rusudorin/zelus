@@ -16,6 +16,21 @@ def set_redis_cluster(user, arguments=''):
 
 	action += ip + ":6379 "
 
-    action += " < yes" 
+    action += " < yes"
 
     os.system("ssh " + arguments + " " + user + "@" + config.redis_ips[0] + " " + "'" + action  + "'")
+
+def set_riak_cluster(user, arguments=''):
+
+    action_base = "riak-admin cluster join "
+
+    for ip in config.riak_ips:
+
+        action = action_base + "riak@" + ip
+        os.system("ssh " + arguments + " " + user + "@" + config.riak_ips[0] + " " + "'" + action + "'")
+
+    action = "riak-admin cluster plan"
+    os.system("ssh " + arguments + " " + user + "@" + config.riak_ips[0] + " " + "'" + action + "'")
+
+    action = "riak-admin cluster commit"
+    os.system("ssh " + arguments + " " + user + "@" + config.riak_ips[0] + " " + "'" + action + "'")

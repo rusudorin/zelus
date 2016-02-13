@@ -1,6 +1,6 @@
 class riak{
 
-  $bind_ip = "192.168.33.16"
+  $bind_ip = "$templ_bind_ip"
   $path = ['/usr/bin', '/usr', '/usr/sbin', '/sbin', '/usr/local/sbin', '/bin'] 
 
   exec {"add_repo":

@@ -42,7 +42,7 @@ def deploy_stormtrooper(user, host, nosql, worker_name, concurrency, queue):
 
 # launch a mongodb node
 def deploy_mongodb(user, host, replica_set):
-    
+
     d = {
 	"templ_bind_ip": host,
 	"templ_replica_set_name": replica_set
@@ -50,6 +50,7 @@ def deploy_mongodb(user, host, replica_set):
 
     dn.deploy('mongodb', user, host, d)
 
+# launch a redis node
 def deploy_redis(user, host):
 
     d = {
@@ -58,3 +59,28 @@ def deploy_redis(user, host):
     }
 
     dn.deploy('redis', user, host, d)
+
+# launch a riak node
+def deploy_riak(user, host):
+
+    d = {
+            "templ_bind_ip": host,
+        }
+
+    dn.deploy('riak', user, host, d)
+
+# launch cassandra node
+def deploy_cassandra(user, host):
+
+    seeds = ""
+    for ip in config.cassandra_ips:
+        seeds += ip + ","
+
+    d = {
+            "templ_user": user,
+            "templ_listen_address": host,
+            "templ_rpc_address": host,
+            "templ_seeds_list": seeds,
+        }
+
+    dn.deploy('cassandra', user, host, d)
