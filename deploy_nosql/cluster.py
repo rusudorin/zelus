@@ -34,3 +34,11 @@ def set_riak_cluster(user, arguments=''):
 
     action = "riak-admin cluster commit"
     os.system("ssh " + arguments + " " + user + "@" + config.riak_ips[0] + " " + "'" + action + "'")
+
+def set_bigcouch_cluster(user, arguments=''):
+
+    for ip in config.bigcouch_ips:
+
+        action = "curl -X PUT http://0.0.0.0:5986/nodes/bigcouch@" + ip + " -d {}"
+
+        os.system("ssh " + arguments + " " + user + "@" + config.bigcouch_ips[0] + " " +"'" + action + "'")

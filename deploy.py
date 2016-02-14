@@ -84,3 +84,11 @@ def deploy_cassandra(user, host):
         }
 
     dn.deploy('cassandra', user, host, d)
+
+# launch bigcouch
+def deploy_bigcouch(user, host):
+
+    d = {
+            "templ_home_folder": "/home/" + user
+        }
+    dn.deploy('bigcouch', user, host, d)
