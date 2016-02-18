@@ -1,6 +1,10 @@
 class hbase {
 
   $path = ['/usr/bin', '/usr', '/usr/sbin', '/bin', '/sbin']
+  $hostname = "$templ_hostname"
+  $ip_adress = "$templ_ip_address"
+  $regionservers = "$templ_regionservers"
+  $hbase_sites = "$hbase_sites"
 
   exec { "add_java_repo":
     command => "sudo add-apt-repository -y ppa:openjdk-r/ppa",
@@ -70,6 +74,33 @@ class hbase {
   exec { 'install_hbase_master':
     command => 'sudo apt-get install -y hadoop-hbase-master',
     path => $path,
+    require => Exec['install_hbase']
+  }
+
+   exec { 'set_hostname':
+    command => "sudo /bin/echo '${hostname}' > /etc/hostname",
+    user => root,
+    path => $path,
+    require => Exec['install_hbase_master']
+  }
+
+  exec { 'set_ip_address':
+    command => "sudo /bin/echo '${ip_address} ${hostname}' >> /etc/hosts",
+    path => $path,
+    require => Exec['set_hostname']
+  }
+
+  file { "/etc/hbase/conf/hbase-site.xml":
+    content => template("hbase/hbase-site.xml.erb"),
+    owner => hbase,
+    group => hbase,
+    require => Exec['install_hbase']
+  }
+
+  file { "/etc/hbase/conf/regionservers":
+    content => template("hbase/regionservers.erb"),
+    owner => hbase,
+    group => hbase,
     require => Exec['install_hbase']
   }
 }

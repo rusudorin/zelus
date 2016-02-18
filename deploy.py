@@ -92,3 +92,38 @@ def deploy_bigcouch(user, host):
             "templ_home_folder": "/home/" + user
         }
     dn.deploy('bigcouch', user, host, d)
+
+# launch hbase
+def deploy_hbase(user, host, hostname):
+
+    regionservers = ''
+    for ip in config.hbase_ips:
+        regionservers += ip + '\n'
+
+    # setting hbase in distributed mode
+    hbase_sites = "<property>\n  <name>hbase.cluster.distributed</name>\n  <value>true</value>\n</property>"
+
+    hbase_site += '\n'
+
+    # adding all zookeepers
+    hbase_site += "<property>\n  <name>hbase.zookeeper.quorum</name>\n  <value>"
+
+    zookeeper_ips = ''
+    for ip in config.hbase_ips:
+        zookeeper_ips += ip + ','
+    zookeeper_ips = zookeeper_ips[:-1]
+
+    hbase_site += zookeeper_ips
+    hbase_site += "</value>\n</property>"
+
+    # adding zookeeper data dir
+    hbase_site += "<property>\n  <name>hbase.zookeeper.property.dataDir</name>\n  <value>/usr/local/zookeeper</value>\n</property>"
+
+
+    d = {
+            "templ_hostname": hostname,
+            "templ_ip_address": host,
+            "templ_regionservers": regionservers,
+            "templ_hbase_sites": hbase_sites
+        }
+    dn.deploy('hbase', user, host, d)
