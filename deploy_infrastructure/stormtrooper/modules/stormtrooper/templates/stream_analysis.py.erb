@@ -28,7 +28,7 @@ try:
             ratio = nb_tasks/(diff.seconds + 1.0)
 
             if (diff.seconds + 1) % 5 == 0 and  diff.seconds + 1 != last_second:
-            proxy.report("<%worker_name%>", ratio)
+            proxy.report("<%=worker_name%>", ratio)
                 last_second = diff.seconds + 1
 
 	if 'tasks.write_test' in line and 'succeeded' in line:
