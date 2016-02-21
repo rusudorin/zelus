@@ -39,8 +39,9 @@ def install_deployment(deployment, user, host, arguments=''):
 
     change_dir = 'cd ' + root_folder + user + '/' + deployment
     apply_template = 'python apply_template.py'
+    install_location = 'sh ' + root_folder + user + '/' + deployment + '/install.sh'
 
-    action = change_dir + ';' + apply_template + ';' 
+    action = change_dir + ';' + apply_template + ';' + install_location
 
     os.system("ssh " + arguments + " " + user + "@" + host + " " + "'" + action  + "'")
 

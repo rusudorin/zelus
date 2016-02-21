@@ -18,7 +18,7 @@ class emperor{
   }
 
   file { "/etc/rabbitmq/rabbitmq-env.conf":
-    content => template("rabbitmq_deploy/rabbitmq-env.conf.erb"),
+    content => template("emperor/rabbitmq-env.conf.erb"),
     owner => root,
     group => root,
     require => Exec['install_dependencies'],

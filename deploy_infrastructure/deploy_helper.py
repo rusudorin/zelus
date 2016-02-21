@@ -26,14 +26,15 @@ def prepare_template(deployment, user, host, substitution_dict, arguments=''):
     d = {"templ_module_name": deployment, "templ_substitution_dict": substitution_dict}
     result = src.safe_substitute(d)
 
-    fileout = open(get_current_folder() + '/templating/apply_template.py', 'w')
+    fileout = open(get_current_folder() + '/templating/apply_template' + '_' + substitution_dict['templ_worker_name'] + '.py', 'w')
     fileout.write(result)
     fileout.close()
 
-    os.system('scp ' + arguments + get_current_folder() + '/templating/apply_template.py ' + user + '@' + host + ':' + root_folder + user + '/' + deployment)
+    os.system('scp ' + arguments + get_current_folder() + '/templating/apply_template' + '_' + substitution_dict['templ_worker_name'] + '.py ' + user + '@' + host + ':' + root_folder + user + '/' + deployment + '/apply_template.py')
+#TODO - delete file
 
 # initiates the instalation of a deployment on a new machine
-def install_deployment(deployment, user, host, arguments=''):
+def install_deployment(deployment, user, host, substitution_dict, arguments=''):
     if deployment not in deployment_options:
         return 'Not a deployment'
 
@@ -42,13 +43,16 @@ def install_deployment(deployment, user, host, arguments=''):
     install_location = 'sh ' + root_folder + user + '/' + deployment + '/install.sh'
 
     action = change_dir + ';' + apply_template + ';' + install_location
-    if deployment == 'stormtrooper':
-        action += ';' + 'python rpc_consumer.py &'
-
     os.system("ssh " + arguments + " " + user + "@" + host + " " + "'" + action  + "'")
 
 # sets up deployment
 def deploy(deployment, user, host, substitution_dict, arguments=''):
     copy_deployment(deployment, user, host)
     prepare_template(deployment, user, host, substitution_dict)
-    install_deployment(deployment, user, host)
+    install_deployment(deployment, user, host, substitution_dict)
+
+    if deployment == 'stormtrooper':
+        deployment_folder = substitution_dict['templ_deploy_home']
+        action = 'nohup python ' + deployment_folder + '/rpc_consumer.py < /dev/null > std.out 2> std.err &'
+        command = "ssh " + arguments + " " + user + "@" + host + " " + "'" + action  + "'"
+        os.system(command)
