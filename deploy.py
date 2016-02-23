@@ -35,7 +35,7 @@ def deploy_stormtrooper(user, host, nosql, worker_name, concurrency, queue):
             "templ_deploy_home": "/home/" + user,
             "templ_handler_name": nosql + "_handler",
             "templ_handler_class": const.nosql_classes[nosql],
-            "templ_extra_package": extra_pckg[nosql],
+            "templ_extra_packages": extra_pckg[nosql],
             "templ_worker_name": worker_name,
             "templ_concurrency": concurrency,
             "templ_consume_queue": queue,

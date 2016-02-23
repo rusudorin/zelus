@@ -17,7 +17,7 @@ process = subprocess.Popen(command, stderr=subprocess.PIPE, stdout=subprocess.PI
 
 try:
     for line in iter(process.stderr.readline, ''):
-        if 'tasks.read_test' in line and 'succeeded' in line:
+        if 'tasks.read_nosql' in line and 'succeeded' in line:
             line_time = line[1:24]
     	    nb_tasks += 1
     	    dt = datetime.strptime(line_time, '%Y-%m-%d %H:%M:%S,%f')
@@ -28,11 +28,19 @@ try:
             ratio = nb_tasks/(diff.seconds + 1.0)
 
             if (diff.seconds + 1) % 5 == 0 and  diff.seconds + 1 != last_second:
-            proxy.report("<%=worker_name%>", ratio)
+            proxy.report_ratio("<%=worker_name%>", ratio)
                 last_second = diff.seconds + 1
 
-	if 'tasks.write_test' in line and 'succeeded' in line:
+	if 'tasks.write_nosql' in line and 'succeeded' in line:
 	    print 'write'
+
+	if 'tasks.start_consuming' in line and 'succeeded' in line:
+	    proxy.report_ping("<%=worker_name%>")
+
+	if 'tasks.stop_consuming' in line and 'succeeded' in line:
+	    proxy.report_pong("<%=worker_name%>")
+	    os.killpg(process.pid, signal.SIGTERM)
+
 except KeyboardInterrupt:
     os.killpg(process.pid, signal.SIGTERM)
 except Exception as e:

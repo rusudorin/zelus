@@ -1,14 +1,29 @@
 from SimpleXMLRPCServer import SimpleXMLRPCServer
 
-consumer_dict = {}
+ratio_dict = {}
+available_dict = {}
 
 
-def report(unique_id, ratio):
+def report_ratio(unique_id, ratio):
     # print unique_id + " is consuming with " + str(ratio)
-    consumer_dict[unique_id] = ratio
-    print consumer_dict
+    ratio_dict[unique_id] = ratio
+    print ratio_dict
+    return True
+
+
+def report_ping(unique_id):
+    available_dict[unique_id] = True
+    print available_dict
+    return True
+
+
+def report_pong(unique_id):
+    available_dict[unique_id] = False
+    print available_dict
     return True
 
 server = SimpleXMLRPCServer(("10.148.0.254", 1138))
-server.register_function(report, "report")
+server.register_function(report_ratio(), "report_ratio")
+server.register_function(report_ping, "report_ping")
+server.register_function(report_pong, "report_pong")
 server.serve_forever()

@@ -1,4 +1,4 @@
-from tasks import read_test
+from tasks import read_nosql, start_consuming, stop_consuming
 from random import randint
 from multiprocessing import Process
 
@@ -17,7 +17,15 @@ def populate_queue(nosql, ips, queue_name):
         generated_timestamp_list.append(timestamp_list[index-1])
 
     for i in range(0, len(generated_timestamp_list)):
-        read_test.apply_async(args=[generated_timestamp_list[i]], queue=queue_name)
+        read_nosql.apply_async(args=[generated_timestamp_list[i]], queue=queue_name)
+
+
+def start_consumer(queue_name):
+    start_consuming.apply_async(args=[0], queue=queue_name)
+
+
+def stop_consumer(queue_name):
+    stop_consuming.apply_async(args=[0], queue=queue_name)
 
 
 def get_nosql_handler(nosql, ips):

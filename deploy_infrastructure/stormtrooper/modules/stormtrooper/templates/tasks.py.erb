@@ -5,14 +5,26 @@ import time
 app = Celery('tasks', broker='amqp://<%=rabbit_user%>:<%=rabbit_pass%>@<%=rabbit_ip%>/<%=rabbit_vhost%>')
 nosql = <%=handler_class%>(['<%=nosql_ip%>'])
 
+
 @app.task
-def read_test(x):
+def read_nosql(x):
     from celery import current_task
     task_id = current_task.request.id
     print 'read ' + task_id + " " +  json.dumps({"time": time.time()})
     return nosql.get_element_by_timestamp(x)
 
+
 @app.task
-def write_test(x):
+def write_nosql(x):
     print 'write'
     return nosql.perform_write(x)
+
+
+@app.task
+def start_consuming(x):
+    return True
+
+
+@app.task
+def stop_consuming(x):
+    return True
