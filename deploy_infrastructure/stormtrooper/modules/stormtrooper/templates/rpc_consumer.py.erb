@@ -7,6 +7,9 @@ def start_consuming():
 
     return True
 
+def ping():
+    return 'pong'
+
 server = SimpleXMLRPCServer(("<%=current_ip%>", 2187))
 server.register_function(start_consuming, "start_consuming")
 server.serve_forever()

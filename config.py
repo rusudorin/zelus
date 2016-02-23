@@ -27,3 +27,9 @@ redis_ips = []
 
 # consumers ips
 consumer_ips = []
+
+# cassandra ips
+cassandra_ips = []
+
+# hbase ips
+hbase_ips = []
