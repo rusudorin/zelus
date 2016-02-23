@@ -3,7 +3,8 @@ import xmlrpclib
 from SimpleXMLRPCServer import SimpleXMLRPCServer
 
 def start_consuming():
-    os.system("python stream_analysis.py &")
+    os.system('su - opennebula -c "nohup python stream_analysis.py < /dev/null > std.out 2> std.err &"')
+
     return True
 
 server = SimpleXMLRPCServer(("<%=current_ip%>", 2187))

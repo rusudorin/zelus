@@ -1,9 +1,10 @@
-from pymongo import MongoClient
 import argparse
 import sys
 import subprocess
 import const
-import time
+
+global NoSQLHandler
+
 
 def create_parser():
     """
@@ -20,12 +21,14 @@ def create_parser():
 
     return parser
 
+
 def parse_arguments(arguments, parser):
     """
     get arguments
     """
     args = parser.parse_args(arguments)
     return args
+
 
 def get_rand_string(granularity):
     """
@@ -35,25 +38,23 @@ def get_rand_string(granularity):
     script_cmd = "python data_gen.py --size %d " % granularity
     return subprocess.check_output(script_cmd, shell=True).strip()
 
+
 def set_environment(nosql):
     """
     Sets the correct imports according to the chosen nosql datastore
     """
+    global NoSQLHandler
     if nosql == 'cassandra':
-        global NoSQLHandler
-        from cassandra_handler import CassandraHandler as NoSQLHandler
+        from nosql_handlers.cassandra_handler import CassandraHandler as NoSQLHandler
     elif nosql == 'mongodb':
-        global NoSQLHandler
-        from mongodb_handler import MongoDBHandler as NoSQLHandler
+        from nosql_handlers.mongodb_handler import MongoDBHandler as NoSQLHandler
     elif nosql == 'riak':
-        global NoSQLHandler
-        from riak_handler import RiakHandler as NoSQLHandler
+        from nosql_handlers.riak_handler import RiakHandler as NoSQLHandler
     elif nosql == 'couchdb':
-        global NoSQLHandler
-        from couchdb_handler import CouchDBHandler as NoSQLHandler
+        from nosql_handlers.couchdb_handler import CouchDBHandler as NoSQLHandler
     elif nosql == 'hbase':
-        global NoSQLHandler
-        from hbase_handler import HBaseHandler as NoSQLHandler
+        from nosql_handlers.hbase_handler import HBaseHandler as NoSQLHandler
+
 
 def main():
 
@@ -70,6 +71,7 @@ def main():
     nosql = args.nosql
 
     do_populate(ip_list, granularity, total_size, keyspace, columns, nosql)
+
 
 def do_populate(ip_list, granularity, total_size, keyspace, columns, nosql):
     # basic checks
@@ -101,7 +103,7 @@ def do_populate(ip_list, granularity, total_size, keyspace, columns, nosql):
     set_environment(nosql)
 
     # get the session
-    nosql = NoSQLHandler(['ip_goes_here'])
+    nosql = NoSQLHandler(ip_list)
 
     i = 1
     while i * granularity <= total_size:

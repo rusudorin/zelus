@@ -1,5 +1,5 @@
 # User IP - the Ip of the machine which will initiate the test
-user_id = '8.8.8.8'
+user_ip = '8.8.8.8'
 
 # RabbitMq IP
 rabbit_ip = "10.141.0.154"
