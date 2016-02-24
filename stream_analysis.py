@@ -22,15 +22,15 @@ try:
     for line in iter(process.stderr.readline, ''):
         if 'tasks.read_test' in line and 'succeeded' in line:
             line_time = line[1:24]
-    	    nb_tasks += 1
-    	    dt = datetime.strptime(line_time, '%Y-%m-%d %H:%M:%S,%f')
-    	    if first:
-    	        first_dt = dt
-    	        first = False
-    	    diff = dt - first_dt
-    	    ratio = nb_tasks/(diff.seconds + 1.0)
-	if 'tasks.write_test' in line and 'succeeded' in line:
-	    print 'write'
+            nb_tasks += 1
+            dt = datetime.strptime(line_time, '%Y-%m-%d %H:%M:%S,%f')
+            if first:
+                first_dt = dt
+                first = False
+            diff = dt - first_dt
+            ratio = nb_tasks/(diff.seconds + 1.0)
+    if 'tasks.write_test' in line and 'succeeded' in line:
+        print 'write'
     print ratio
     print nb_tasks
     print diff

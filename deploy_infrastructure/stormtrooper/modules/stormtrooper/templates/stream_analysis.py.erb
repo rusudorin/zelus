@@ -28,8 +28,8 @@ try:
             ratio = nb_tasks/(diff.seconds + 1.0)
 
             if (diff.seconds + 1) % 5 == 0 and  diff.seconds + 1 != last_second:
-            proxy.report_ratio("<%=worker_name%>", ratio)
-                last_second = diff.seconds + 1
+                proxy.report_ratio("<%=worker_name%>", ratio)
+            last_second = diff.seconds + 1
 
 	if 'tasks.write_nosql' in line and 'succeeded' in line:
 	    print 'write'

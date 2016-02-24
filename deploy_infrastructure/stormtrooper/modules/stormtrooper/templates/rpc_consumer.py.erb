@@ -3,6 +3,8 @@ import sys
 import xmlrpclib
 from SimpleXMLRPCServer import SimpleXMLRPCServer
 
+running = True
+
 def start_consuming():
     os.system('su - opennebula -c "nohup python stream_analysis.py < /dev/null > std.out 2> std.err &"')
 
@@ -13,7 +15,8 @@ def ping():
 
 
 def stop_consuming():
-    sys.exit()
+    global running
+    running = False
     return True
 
 
@@ -21,4 +24,5 @@ server = SimpleXMLRPCServer(("<%=current_ip%>", 2187))
 server.register_function(start_consuming, "start_consuming")
 server.register_function(stop_consuming, "stop_consuming")
 server.register_function(ping, "ping")
-server.serve_forever()
+while running:
+    server.handle_request()

@@ -23,7 +23,7 @@ def report_pong(unique_id):
     return True
 
 server = SimpleXMLRPCServer(("10.148.0.254", 1138))
-server.register_function(report_ratio(), "report_ratio")
+server.register_function(report_ratio, "report_ratio")
 server.register_function(report_ping, "report_ping")
 server.register_function(report_pong, "report_pong")
 server.serve_forever()
