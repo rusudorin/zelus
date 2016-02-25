@@ -5,22 +5,23 @@ import json
 import time
 import config
 
-app = Celery('tasks', broker="amqp://%s:%s@%s/%s" % (config.rabbit_user, config.rabbit_pass, config.rabbit_ip, config.rabbit_vhost))
-mongo = MongoDBHandler([config.mongo_primary_ip])
+app = Celery('tasks', broker="amqp://%s:%s@%s/%s" %
+                             (config.rabbit_user, config.rabbit_pass, config.rabbit_ip, config.rabbit_vhost))
+nosql = MongoDBHandler([config.mongo_primary_ip])
 
 
 @app.task
 def read_nosql(x):
     from celery import current_task
     task_id = current_task.request.id
-    print 'read ' + task_id + " " +  json.dumps({"time": time.time()})
-    return mongo.get_element_by_timestamp(x)
+    print 'read ' + task_id + " " + json.dumps({"time": time.time()})
+    return nosql.get_element_by_timestamp(x)
 
 
 @app.task
 def write_nosql(x):
     print 'write'
-    return mongo.perform_write(x)
+    return nosql.perform_write(x)
 
 
 @app.task

@@ -128,7 +128,8 @@ def deploy_hbase(user, host, hostname):
     hbase_sites += "</value>\n</property>"
 
     # adding zookeeper data dir
-    hbase_sites += "<property>\n  <name>hbase.zookeeper.property.dataDir</name>\n  <value>/usr/local/zookeeper</value>\n</property>"
+    hbase_sites += "<property>\n  <name>hbase.zookeeper.property.dataDir</name>\n" \
+                   "  <value>/usr/local/zookeeper</value>\n</property>"
 
     d = {
             "templ_hostname": hostname,

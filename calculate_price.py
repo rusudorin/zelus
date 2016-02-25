@@ -4,6 +4,7 @@ import argparse
 import sys
 import ec2_price
 
+
 def create_parser():
     parser = argparse.ArgumentParser()
 
@@ -15,9 +16,11 @@ def create_parser():
 
     return parser
 
+
 def parse_arguments(arguments, parser):
     args = parser.parse_args(arguments)
     return args
+
 
 def main():
     # initiate parser
