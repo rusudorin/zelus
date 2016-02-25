@@ -33,22 +33,13 @@ def prepare_template(deployment, user, host, substitution_dict, arguments=''):
     }
     result = src.safe_substitute(d)
 
-    if deployment == 'stormtrooper':
-        fileout = open("%s/templating/apply_template_%s.py" %
-                       (get_current_folder(), substitution_dict['templ_worker_name']), 'w')
-    else:
-        fileout = open("%s/templating/apply_template.py" % get_current_folder(), 'w')
+    fileout = open("%s/templating/apply_template_%s.py" % (get_current_folder(), host), 'w')
     fileout.write(result)
     fileout.close()
 
-    if deployment == 'stormtrooper':
-        os.system("scp %s %s/templating/apply_template_%s.py %s@%s:%s%s/%s/apply_template.py" %
-                  (arguments, get_current_folder(), substitution_dict['templ_worker_name'],
-                   user, host, root_folder, user, deployment))
-    else:
-        os.system("scp %s %s/templating/apply_template.py %s@%s:%s%s/%s/apply_template.py" %
-                  (arguments, get_current_folder(), user, host, root_folder, user, deployment))
-# TODO - delete file
+    os.system("scp %s %s/templating/apply_template_%s.py %s@%s:%s%s/%s/apply_template.py" %
+              (arguments, get_current_folder(), host, user, host, root_folder, user, deployment))
+    os.remove("%s/templating/apply_template_%s.py" % (get_current_folder(), host))
 
 
 # initiates the installation of a deployment on a new machine
