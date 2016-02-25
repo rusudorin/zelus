@@ -53,7 +53,15 @@ def install_deployment(deployment, user, host, substitution_dict, arguments=''):
     install_location = 'sh ' + root_folder + user + '/' + deployment + '/install.sh'
 
     action = change_dir + ';' + apply_template + ';' + install_location
-    os.system("ssh " + arguments + " " + user + "@" + host + " " + "'" + action  + "'")
+    os.system("ssh " + arguments + " " + user + "@" + host + " " + "'" + action + "'")
+
+
+# start rpcs on each consumer
+def start_rpc(deployment, user, host, deployment_folder, arguments=''):
+    if deployment == 'stormtrooper':
+        action = 'nohup python ' + deployment_folder + '/rpc_consumer.py < /dev/null > std.out 2> std.err &'
+        command = "ssh " + arguments + " " + user + "@" + host + " " + "'" + action + "'"
+        os.system(command)
 
 
 # sets up deployment
@@ -61,9 +69,4 @@ def deploy(deployment, user, host, substitution_dict, arguments=''):
     copy_deployment(deployment, user, host)
     prepare_template(deployment, user, host, substitution_dict)
     install_deployment(deployment, user, host, substitution_dict)
-
-    if deployment == 'stormtrooper':
-        deployment_folder = substitution_dict['templ_deploy_home']
-        action = 'nohup python ' + deployment_folder + '/rpc_consumer.py < /dev/null > std.out 2> std.err &'
-        command = "ssh " + arguments + " " + user + "@" + host + " " + "'" + action  + "'"
-        os.system(command)
+    start_rpc(deployment, user, host, substitution_dict)
