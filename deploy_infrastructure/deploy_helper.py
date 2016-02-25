@@ -56,9 +56,10 @@ def install_deployment(deployment, user, host, substitution_dict, arguments=''):
 
 
 # start rpcs on each consumer
-def start_rpc(deployment, user, host, deployment_folder, arguments=''):
+def start_rpc(deployment, user, host, substitution_dict, arguments=''):
     if deployment == 'stormtrooper':
-        action = 'nohup python ' + deployment_folder + '/rpc_consumer.py < /dev/null > std.out 2> std.err &'
+        action = 'nohup python ' + substitution_dict['templ_deploy_home'] +\
+                 '/rpc_consumer.py < /dev/null > std.out 2> std.err &'
         command = "ssh %s %s@%s '%s'" % (arguments, user, host, action)
         os.system(command)
 

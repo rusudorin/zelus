@@ -7,8 +7,7 @@ running = True
 
 def start_consuming():
     os.system('su - opennebula -c "nohup python stream_analysis.py < /dev/null > std.out 2> std.err &"')
-
-    return True
+    return 'started'
 
 def ping():
     return 'pong'
@@ -17,7 +16,7 @@ def ping():
 def stop_consuming():
     global running
     running = False
-    return True
+    return 'stopped'
 
 
 server = SimpleXMLRPCServer(("<%=current_ip%>", 2187))

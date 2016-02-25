@@ -48,8 +48,3 @@ def populate(lots_of_args):
     p = Process(target=populate_queue, args=lots_of_args)
     p.start()
 
-populate_queue('worker2')
-populate_queue('worker3')
-populate_queue('worker4')
-populate_queue('worker5')
-populate_queue('worker6')

@@ -1,6 +1,6 @@
 # will perform a read or write to a certain nosql
 from celery import Celery
-from mongodb_handler import MongoDBHandler
+from nosql_handlers.mongodb_handler import MongoDBHandler
 import json
 import time
 import config
