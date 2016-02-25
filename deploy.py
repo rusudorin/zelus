@@ -8,7 +8,7 @@ import const
 # launch an emperor node
 def deploy_emperor(user, host):
     d = {
-            "templ_rabbit_ip": config.rabbit_ip,
+            "templ_rabbit_ip": config.emperor_ip,
             "templ_rabbit_user": config.rabbit_user,
             "templ_rabbit_pass": config.rabbit_pass,
             "templ_rabbit_vhost": config.rabbit_vhost
@@ -27,7 +27,7 @@ def deploy_stormtrooper(user, host, nosql, worker_name, concurrency, queue):
         return "Nope"
 
     d = {
-            "templ_rabbit_ip": config.rabbit_ip,
+            "templ_rabbit_ip": config.emperor_ip,
             "templ_rabbit_user": config.rabbit_user,
             "templ_rabbit_pass": config.rabbit_pass,
             "templ_rabbit_vhost": config.rabbit_vhost,

@@ -11,12 +11,14 @@ class Consumer:
         self.proxy = xmlrpclib.ServerProxy("http://%s:2187" % ip)
 
     def start_consuming(self):
-        self.proxy.start_consuming()
+        response = self.proxy.start_consuming()
         start_consumer(self.unique_id)
+        return response
 
     def stop_consuming(self):
-        self.proxy.stop_consuming()
+        response = self.proxy.stop_consuming()
         stop_consumer(self.unique_id)
+        return response
 
     def ping(self):
         return self.proxy.ping()
