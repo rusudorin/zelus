@@ -32,7 +32,8 @@ def deploy_stormtrooper(user, host, nosql, worker_name, concurrency, queue):
             "templ_rabbit_pass": config.rabbit_pass,
             "templ_rabbit_vhost": config.rabbit_vhost,
             "templ_nosql_ip": config.nosql_ip,
-            "templ_deploy_home": "/home/" + user,
+            "templ_deploy_home": "/home/opennebula",  # TODO: temporary, change back once not using opennebula
+            # "templ_deploy_home": "/home/" + user,
             "templ_handler_name": nosql + "_handler",
             "templ_handler_class": const.nosql_classes[nosql],
             "templ_extra_packages": extra_pckg[nosql],
