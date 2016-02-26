@@ -5,6 +5,7 @@ import time
 import data_gen
 from nosql_handler import NoSQLHandler
 
+
 class MongoDBHandler(NoSQLHandler):
 
     def __init__(self, ip_list):

@@ -33,31 +33,31 @@ try:
 
         if 'tasks.write_nosql' in line and 'succeeded' in line:
             line_time = line[1:24]
-                nb_tasks += 1
-                dt = datetime.strptime(line_time, '%Y-%m-%d %H:%M:%S,%f')
-                if first:
-                    first_dt = dt
-                    first = False
-                diff = dt - first_dt
-                ratio = nb_tasks/(diff.seconds + 1.0)
+            nb_tasks += 1
+            dt = datetime.strptime(line_time, '%Y-%m-%d %H:%M:%S,%f')
+            if first:
+                first_dt = dt
+                first = False
+            diff = dt - first_dt
+            ratio = nb_tasks/(diff.seconds + 1.0)
 
-                if (diff.seconds + 1) % 5 == 0 and  diff.seconds + 1 != last_second:
-                    proxy.report_ratio("<%=worker_name%>", ratio)
-                last_second = diff.seconds + 1
+            if (diff.seconds + 1) % 5 == 0 and  diff.seconds + 1 != last_second:
+                proxy.report_ratio("<%=worker_name%>", ratio)
+            last_second = diff.seconds + 1
 
         if 'tasks.update_nosql' in line and 'succeeded' in line:
             line_time = line[1:24]
-                nb_tasks += 1
-                dt = datetime.strptime(line_time, '%Y-%m-%d %H:%M:%S,%f')
-                if first:
-                    first_dt = dt
-                    first = False
-                diff = dt - first_dt
-                ratio = nb_tasks/(diff.seconds + 1.0)
+            nb_tasks += 1
+            dt = datetime.strptime(line_time, '%Y-%m-%d %H:%M:%S,%f')
+            if first:
+                first_dt = dt
+                first = False
+            diff = dt - first_dt
+            ratio = nb_tasks/(diff.seconds + 1.0)
 
-                if (diff.seconds + 1) % 5 == 0 and  diff.seconds + 1 != last_second:
-                    proxy.report_ratio("<%=worker_name%>", ratio)
-                last_second = diff.seconds + 1
+            if (diff.seconds + 1) % 5 == 0 and  diff.seconds + 1 != last_second:
+                proxy.report_ratio("<%=worker_name%>", ratio)
+            last_second = diff.seconds + 1
 
         if 'tasks.start_consuming' in line and 'succeeded' in line:
             proxy.report_ping("<%=worker_name%>")

@@ -27,7 +27,7 @@ def populate_queue_write(queue_name, amount, granularity, varying=False):
         else:
             write_size = granularity
 
-        write_nosql.apply_async(args=[write_size], queue_name=queue_name)
+        write_nosql.apply_async(args=[write_size], queue=queue_name)
 
 
 def populate_queue_update(nosql, queue_name, amount, granularity, varying=False):
@@ -44,7 +44,7 @@ def populate_queue_update(nosql, queue_name, amount, granularity, varying=False)
         else:
             write_size = granularity
 
-        update_nosql.apply_async(args=[timestamp_list[index], write_size], queue_name=queue_name)
+        update_nosql.apply_async(args=[timestamp_list[index], write_size], queue=queue_name)
 
 
 def start_consumer(queue_name):
