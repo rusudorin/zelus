@@ -1,124 +1,97 @@
 import const
 import data_gen
-import sys
 import time
-from cassandra.cluster import Cluster
-from cassandra.query import tuple_factory
-from cassandra.concurrent import execute_concurrent_with_args
 from nosql_handler import NoSQLHandler
+import pycassa
 
 
 class CassandraHandler(NoSQLHandler):
 
     def __init__(self, ip_list):
         self.ip_list = ip_list
-        self.cluster = self.connect_cluster(ip_list)
-        self.session = self.get_session(self.cluster)
+        self.pool = self.connect_cluster(self.ip_list)
+        self.cf = self.get_session(self.pool)
 
     def get_element_by_timestamp(self, timestamp):
         """
         retrieves an element using the unique timestamp
         """
-        insertion = "SELECT * from %s where timestamp='%s';"
-        intermed_read = insertion % (const.table_name, timestamp)
-        exe_result = self.session.execute(intermed_read)
-        self.session.cluster.shutdown()
-        return exe_result
+        try:
+            return self.cf.get(timestamp)
+        except:
+            return False
 
     def query_manager_setup(self, obj, cluster):
         """
         basic setup for multiprocessing stress test
         """
-        obj.session = self.get_session(cluster)
-        obj.session.row_factory = tuple_factory
-        obj.prepared = obj.session.prepare('SELECT * FROM benchmark.users WHERE timestamp=?')
+        pass
 
     def concurrent_read(self, obj, params):
         """
         performs a concurrent execution with the parameters in params
         """
-        return execute_concurrent_with_args(obj.session, obj.prepared, params)
+        pass
 
     def concurrent_write(self, obj, params, granularity):
         """
         read
         """
-        obj.prepared = obj.session.prepare('INSERT INTO users (timestamp, value) VALUES (?, ?) if not exists')
-        new_params = []
-        for i in range(0, len(params)):
-            gen_string = data_gen.generate_str(granularity)
-            timestamp = '%.6f' % time.time()
-            new_params.append((timestamp, gen_string, ))
-        return execute_concurrent_with_args(obj.session, obj.prepared, new_params)
+        pass
 
     def concurrent_update(self, obj, params, granularity):
         """
         read
         """
-        obj.prepared = obj.session.prepare('UPDATE users SET value = ? where timestamp = ?')
-        new_params = []
-        for param in params:
-            gen_string = data_gen.generate_str(granularity)
-            new_params.append((gen_string, param[0]))
-        return execute_concurrent_with_args(obj.session, obj.prepared, new_params)
+        pass
 
     def connect_cluster(self, ip_list):
         """
         establish connection with the cluster
         """
-        return Cluster(contact_points=ip_list, control_connection_timeout=5.0)
+        return pycassa.ConnectionPool(const.keyspace_name, server_list=self.ip_list)
 
     def perform_write(self, granularity):
         """
         create e random string and write it
         """
-        insertion = "INSERT INTO %s (timestamp, value) VALUES ('%s', '%s') if not exists;"
         gen_string = data_gen.generate_str(granularity)
 
-        timestamp = time.time()
-        intermed_insert = insertion % (const.table_name, '%.6f' % timestamp, gen_string)
-        return self.session.execute(intermed_insert)[0][0]
+        timestamp = str(time.time())
+        return self.cf.insert(timestamp, {"column": gen_string})
 
     def perform_update(self, timestamp, granularity):
         """
         create e random string and write it
         """
-        insertion = "UPDATE %s SET value = '%s' WHERE timestamp = '%s';"
         gen_string = data_gen.generate_str(granularity)
 
         timestamp = time.time()
-        intermed_insert = insertion % (const.table_name, gen_string, '%.6f' % timestamp)
-        return self.session.execute(intermed_insert)[0][0]
+        return self.cf.insert(timestamp, {"column": gen_string})
 
     def get_timestamp_list(self):
         """
         gets all the items from the table
         """
-        timestamp_list = self.session.execute("select timestamp from %s;" % const.table_name)
-        timestamp_list = [timestamp[0] for timestamp in timestamp_list]
-        return timestamp_list
+        return [x[0] for x in self.cf.get_range()]
 
     def get_session(self, cluster):
         """
         establish a session
         """
-        try:
-            session = cluster.connect(const.keyspace_name)
+        # create the table if it does not exist yet
+        self.create_table()
+        session = pycassa.ColumnFamily(cluster, const.table_name)
 
-            # create the table
-            self.create_table(session)
-            return session
-        except Exception as e:
-            print e
-            print "Cannot establish connection"
-            sys.exit(2)
+        return session
 
     def create_table(self, columns=1):
         """
         Creates the table in the current keyspace
         """
         try:
-            self.session.execute("Create table %s (timestamp text, value text, PRIMARY KEY(timestamp));"
-                                 % const.table_name)
+            system_manager = pycassa.system_manager.SystemManager("%s:9160" % self.ip_list[0])
+            system_manager.create_column_family(const.keyspace_name, const.table_name)
         except Exception as e:
+            print e
             pass

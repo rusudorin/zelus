@@ -1,4 +1,4 @@
-cassandra-driver==2.5.1
+pycassa
 pymongo==3.0.2
 riak==2.2.0
 couchdbkit==0.6.5

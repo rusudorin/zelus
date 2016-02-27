@@ -13,19 +13,23 @@ class HBaseHandler(NoSQLHandler):
         self.session = self.get_session(self.cluster)
 
     def create_table(self, columns=1):
-        pass
+        try:
+            self.cluster.create_table(const.table_name, {'timestamp:col1': dict(), 'value:col2': dict()})
+        except:
+            pass
 
     def get_session(self, cluster):
         """
         get the session
         """
+        self.create_table()
         return cluster.table(const.table_name)
 
     def connect_cluster(self, ip_list):
         """
         establish connection with the cluster
         """
-        return Connection(host=ip_list[0], port=9090)
+        return Connection(host=ip_list[0], port=9090, compat='0.90')
 
     def query_manager_setup(self, obj, cluster):
         """
@@ -56,19 +60,18 @@ class HBaseHandler(NoSQLHandler):
         update
         """
         gen_string = data_gen.generate_str(granularity)
-        insert_dict = {'timestamp:col1': timestamp[0], 'value:col2': gen_string}
-        self.session.put(timestamp[0], insert_dict)
+        insert_dict = {'timestamp:col1': timestamp, 'value:col2': gen_string}
+        self.session.put(timestamp, insert_dict)
         return
 
     def get_timestamp_list(self):
         """
         gets all the items from the table
         """
-        scan_result = self.session.scan(filter=b'KeyOnlyFilter() AND FirstKeyOnlyFilter()')
-        return [doc_object[0] for doc_object in scan_result]
+        return [str(key()) for key, value in self.session.scan()]
 
     def get_element_by_timestamp(self, timestamp):
         """
         retrieves an element using the unique timestamp
         """
-        return self.session.row(timestamp[0])
+        return self.session.row(timestamp)

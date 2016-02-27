@@ -4,6 +4,7 @@ import time
 import data_gen
 from nosql_handler import NoSQLHandler
 
+
 class CouchDBHandler(NoSQLHandler):
 
     def __init__(self, ip_list):
@@ -74,4 +75,4 @@ class CouchDBHandler(NoSQLHandler):
         """
         retrieves an element using the unique timestamp
         """
-        return self.session.get(timestamp[0])
+        return self.session.get(timestamp)

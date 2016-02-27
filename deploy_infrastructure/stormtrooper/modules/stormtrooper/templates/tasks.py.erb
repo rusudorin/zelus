@@ -1,6 +1,5 @@
 from celery import Celery
 from <%=handler_name%> import <%=handler_class%>
-from data_gen import generate_str
 import json
 app = Celery('tasks', broker='amqp://<%=rabbit_user%>:<%=rabbit_pass%>@<%=rabbit_ip%>/<%=rabbit_vhost%>')
 nosql = <%=handler_class%>(['<%=nosql_ip%>'])

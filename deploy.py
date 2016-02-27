@@ -20,7 +20,12 @@ def deploy_emperor(user, host):
 def deploy_stormtrooper(user, host, nosql, worker_name, concurrency, queue):
 
     extra_pckg = {
-        "mongodb": "pymongo"
+        "mongodb": "pymongo",
+        "cassandra": "pycassa",
+        "hbase": "happybase",
+        "redis": "redis",
+        "riak": "riak",
+        "bigcouch": "couchdbkit"
     }
 
     if nosql not in const.nosql_list:
@@ -63,7 +68,7 @@ def deploy_redis(user, host):
 
     d = {
         "templ_bind_ip": host,
-        "templ_home": "/home" + user,
+        "templ_home": "/home/" + user,
     }
 
     dn.deploy('redis', user, host, d)

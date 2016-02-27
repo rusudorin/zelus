@@ -1,7 +1,7 @@
 import os
 from string import Template
 
-deployment_options = ['mongodb', 'hbase', 'couchdb', 'riak', 'redis', 'cassandra']
+deployment_options = ['mongodb', 'hbase', 'bigcouch', 'riak', 'redis', 'cassandra']
 root_folder = '/'
 
 

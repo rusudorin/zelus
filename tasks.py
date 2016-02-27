@@ -1,6 +1,5 @@
 # will perform a read or write to a certain nosql
 from celery import Celery
-from data_gen import generate_str
 from nosql_handlers.mongodb_handler import MongoDBHandler
 import config
 
@@ -11,17 +10,20 @@ nosql = MongoDBHandler([config.mongo_primary_ip])
 
 @app.task
 def read_nosql(x):
-    return nosql.get_element_by_timestamp(x)
+    nosql.get_element_by_timestamp(x)
+    return 0
 
 
 @app.task
 def write_nosql(x):
-    return nosql.perform_write(generate_str(x))
+    nosql.perform_write(x)
+    return 0
 
 
 @app.task
 def update_nosql(x, y):
-    return nosql.perform_update(x, generate_str(y))
+    nosql.perform_update(x, y)
+    return 0
 
 
 @app.task

@@ -2,7 +2,7 @@ class hbase {
 
   $path = ['/usr/bin', '/usr', '/usr/sbin', '/bin', '/sbin']
   $hostname = "$templ_hostname"
-  $ip_adress = "$templ_ip_address"
+  $ip_address = "$templ_ip_address"
   $regionservers = "$templ_regionservers"
   $hbase_sites = "$hbase_sites"
 

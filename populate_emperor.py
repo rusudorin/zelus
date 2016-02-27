@@ -12,7 +12,7 @@ def populate_queue_read(nosql, queue_name, amount):
     timestamp_list = handler.get_timestamp_list()
 
     for i in range(0, amount):
-        index = randint(0, len(timestamp_list))
+        index = randint(0, len(timestamp_list) - 1)
         generated_timestamp_list.append(timestamp_list[index-1])
 
     for i in range(0, len(generated_timestamp_list)):
@@ -37,7 +37,7 @@ def populate_queue_update(nosql, queue_name, amount, granularity, varying=False)
     timestamp_list = handler.get_timestamp_list()
 
     for i in range(0, amount):
-        index = randint(0, len(timestamp_list))
+        index = randint(0, len(timestamp_list) - 1)
 
         if varying:
             write_size = randint(0, granularity)
