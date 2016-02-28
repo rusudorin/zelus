@@ -78,7 +78,7 @@ class hbase {
   }
 
    exec { 'set_hostname':
-    command => "sudo /bin/echo '${hostname}' > /etc/hostname",
+    command => "sudo /bin/echo '${hostname}' > /etc/hostname | sudo service hostname restart",
     user => root,
     path => $path,
     require => Exec['install_hbase_master']

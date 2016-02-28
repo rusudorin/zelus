@@ -9,6 +9,8 @@ class CassandraHandler(NoSQLHandler):
 
     def __init__(self, ip_list):
         self.ip_list = ip_list
+        # create the table if it does not exist yet
+        self.create_table()
         self.pool = self.connect_cluster(self.ip_list)
         self.cf = self.get_session(self.pool)
 
@@ -79,8 +81,6 @@ class CassandraHandler(NoSQLHandler):
         """
         establish a session
         """
-        # create the table if it does not exist yet
-        self.create_table()
         session = pycassa.ColumnFamily(cluster, const.table_name)
 
         return session
@@ -91,6 +91,8 @@ class CassandraHandler(NoSQLHandler):
         """
         try:
             system_manager = pycassa.system_manager.SystemManager("%s:9160" % self.ip_list[0])
+            system_manager.create_keyspace(const.keyspace_name, pycassa.system_manager.SIMPLE_STRATEGY,
+                                           {'replication_factor': '1'})
             system_manager.create_column_family(const.keyspace_name, const.table_name)
         except Exception as e:
             print e

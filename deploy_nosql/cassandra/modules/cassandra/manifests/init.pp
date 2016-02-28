@@ -12,6 +12,8 @@ class cassandra{
 
   file { "$cassandra_home":
     ensure => "directory",
+    owner => opennebula,
+    group => opennebula,
   }
 
   exec { "download_cassandra":
@@ -88,17 +90,10 @@ class cassandra{
   }
 
   exec { 'run_cassandra':
-    command => "sudo sh ${cassandra_home}/bin/cassandra",
-    user => root,
+    command => "sudo sh ${cassandra_home}/bin/cassandra &",
+    user => $templ_user,
     path => $path,
     require => File["${cassandra_home}/conf/cassandra.yaml"]
-  }
-
-  exec { 'create_table':
-    command => "echo /'create keyspace benchmark;/' | sudo sh ${cassandra_home}/bin/cassandra-cli --host ${listen_address} --port 9160",
-    user => root,
-    path => $path,
-    require => Exec['run_cassandra']
   }
 
 }

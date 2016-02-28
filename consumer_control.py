@@ -16,6 +16,8 @@ class Consumer:
 
     def stop_consuming(self):
         os.system("ssh %s@%s 'supervisorctl stop stream_analysis'" % (self.user, self.ip))
+        os.system("ssh %s@%s 'ps auwx | grep 'celery' | grep 'worker' | awk '{print $2}' | xargs kill -9" %
+                  (self.user, self.ip))
         stop_consumer(self.unique_id)
 
     def ping(self):

@@ -33,7 +33,7 @@ def deploy_stormtrooper(user, host, nosql, worker_name, concurrency, queue):
         "cassandra": "",
         "hbase": "",
         "redis": "",
-        "riak": "",
+        "riak": "build-essential libssl-dev libffi-dev python-dev",
         "bigcouch": ""
     }
 
@@ -50,8 +50,8 @@ def deploy_stormtrooper(user, host, nosql, worker_name, concurrency, queue):
             # "templ_deploy_home": "/home/" + user,
             "templ_handler_name": nosql + "_handler",
             "templ_handler_class": const.nosql_classes[nosql],
-            "$templ_extra_pip_packages": extra_pip_packages[nosql],
-            "$templ_extra_apt_packages": extra_apt_packages[nosql],
+            "templ_extra_pip_packages": extra_pip_packages[nosql],
+            "templ_extra_apt_packages": extra_apt_packages[nosql],
             "templ_worker_name": worker_name,
             "templ_concurrency": concurrency,
             "templ_consume_queue": queue,
@@ -63,11 +63,11 @@ def deploy_stormtrooper(user, host, nosql, worker_name, concurrency, queue):
 
 
 # launch a mongodb node
-def deploy_mongodb(user, host, replica_set):
+def deploy_mongodb(user, host):
 
     d = {
         "templ_bind_ip": host,
-        "templ_replica_set_name": replica_set
+        "templ_replica_set_name": const.keyspace_name
     }
 
     dn.deploy('mongodb', user, host, d)

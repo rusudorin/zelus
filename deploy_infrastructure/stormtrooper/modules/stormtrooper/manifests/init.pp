@@ -5,7 +5,7 @@ class stormtrooper{
   $rabbit_pass = '$templ_rabbit_pass'
   $rabbit_vhost = '$templ_rabbit_vhost'
   $nosql_ip = '$templ_nosql_ip'
-  $path = ['/usr/bin', '/usr', '/usr/sbin', '/bin']
+  $path = ['/usr/bin', '/usr', '/usr/sbin', '/bin', '/sbin']
   $deploy_home = '$templ_deploy_home'
   $tasks_script = 'tasks.py'
   $handler_name = '$templ_handler_name'
