@@ -11,7 +11,7 @@ class stormtrooper{
   $handler_name = '$templ_handler_name'
   $handler_class = '$templ_handler_class'
   $extra_pip_packages = '$templ_extra_pip_packages'
-  $extra_apt_packages = '$templ_extra__apt_packages'
+  $extra_apt_packages = '$templ_extra_apt_packages'
   $worker_name = '$templ_worker_name'
   $concurrency = '$templ_concurrency'
   $consume_queue = '$templ_consume_queue'

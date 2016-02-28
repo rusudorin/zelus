@@ -19,13 +19,22 @@ def deploy_emperor(user, host):
 # launch a stormtrooper
 def deploy_stormtrooper(user, host, nosql, worker_name, concurrency, queue):
 
-    extra_pckg = {
+    extra_pip_packages = {
         "mongodb": "pymongo",
         "cassandra": "pycassa",
         "hbase": "happybase",
         "redis": "redis",
         "riak": "riak",
         "bigcouch": "couchdbkit"
+    }
+
+    extra_apt_packages = {
+        "mongodb": "",
+        "cassandra": "",
+        "hbase": "",
+        "redis": "",
+        "riak": "",
+        "bigcouch": ""
     }
 
     if nosql not in const.nosql_list:
@@ -41,7 +50,8 @@ def deploy_stormtrooper(user, host, nosql, worker_name, concurrency, queue):
             # "templ_deploy_home": "/home/" + user,
             "templ_handler_name": nosql + "_handler",
             "templ_handler_class": const.nosql_classes[nosql],
-            "templ_extra_packages": extra_pckg[nosql],
+            "$templ_extra_pip_packages": extra_pip_packages[nosql],
+            "$templ_extra_apt_packages": extra_apt_packages[nosql],
             "templ_worker_name": worker_name,
             "templ_concurrency": concurrency,
             "templ_consume_queue": queue,
