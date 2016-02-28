@@ -1,5 +1,5 @@
 # will be replaced with knapsack
-import json
+
 
 def get_indexes(in_list, in_value):
     """
@@ -7,14 +7,15 @@ def get_indexes(in_list, in_value):
     """
     out_list = []
     for i in range(0, len(in_list)):
-	if in_list[i] == in_value:
-	    out_list.append(i)
+        if in_list[i] == in_value:
+            out_list.append(i)
 
     return out_list
 
+
 def recursive(total_val, node_val, price):
     if total_val <= 0:
-	return 0, []
+        return 0, []
 
     result_list = []
     config_list = []
@@ -22,15 +23,15 @@ def recursive(total_val, node_val, price):
     for i in range(0, len(node_val)):
 
         # get recursive results
-	result = recursive(total_val - node_val[i], node_val, price)
+        result = recursive(total_val - node_val[i], node_val, price)
 
         # add to the result_list by adding the current price
-	result_list.append(price[i] + result[0])
+        result_list.append(price[i] + result[0])
 
         # add to the config_list by appending the previous solutions
         new_list = result[1]
-	new_list.append(str(node_val[i]))
-	config_list.append(new_list)
+        new_list.append(str(node_val[i]))
+        config_list.append(new_list)
 
     # get the smallest price
     price_min = min(result_list)
@@ -41,8 +42,8 @@ def recursive(total_val, node_val, price):
     # get the shortest configuration
     config_min = config_list[index_list[0]]
     for i in range(0, len(index_list)):
-	if len(config_min) > len(config_list[index_list[i]]):
-	    config_min = config_list[index_list[i]]
+        if len(config_min) > len(config_list[index_list[i]]):
+            config_min = config_list[index_list[i]]
 
     return price_min, config_min
 

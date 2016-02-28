@@ -10,7 +10,8 @@ class stormtrooper{
   $tasks_script = 'tasks.py'
   $handler_name = '$templ_handler_name'
   $handler_class = '$templ_handler_class'
-  $extra_packages = '$templ_extra_packages'
+  $extra_pip_packages = '$templ_extra_pip_packages'
+  $extra_apt_packages = '$templ_extra__apt_packages'
   $worker_name = '$templ_worker_name'
   $concurrency = '$templ_concurrency'
   $consume_queue = '$templ_consume_queue'
@@ -23,13 +24,13 @@ class stormtrooper{
   }
 
   exec { 'install_dependencies':
-    command => 'sudo apt-get install -y python2.7-dev python-pip',
+    command => "sudo apt-get install -y python2.7-dev python-pip supervisor ${extra_apt_packages}",
     path => $path,
     require => Exec['apt-get_update']
   }
 
   exec {'install_celery':
-    command => "sudo pip install Celery ${extra_packages}",
+    command => "sudo pip install Celery ${extra_pip_packages}",
     path => $path,
     require => Exec['install_dependencies']
   }
@@ -39,13 +40,6 @@ class stormtrooper{
     owner => root,
     group => root,
     require => Exec['install_celery']
-  }
-
-  file { "${deploy_home}/rpc_consumer.py":
-      content => template("stormtrooper/rpc_consumer.py.erb"),
-      owner => root,
-      group => root,
-      require => Exec['install_celery']
   }
 
   file { "${deploy_home}/${tasks_script}":
@@ -81,6 +75,19 @@ class stormtrooper{
     owner => root,
     group => root,
     require => Exec['install_celery']
+  }
+
+  file {"/etc/supervisor/supervisord.conf":
+    content => template("stormtrooper/supervisord.conf.erb"),
+    owner => root,
+    group => root,
+    require => Exec['install_celery']
+  }
+
+  exec {"update_supervisor":
+    command => "supervisorctl update",
+    path => $path,
+    require => File["/etc/supervisor/supervisord.conf"]
   }
 
 }

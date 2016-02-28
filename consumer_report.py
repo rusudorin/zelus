@@ -1,4 +1,5 @@
 from SimpleXMLRPCServer import SimpleXMLRPCServer
+import config
 
 ratio_dict = {}
 available_dict = {}
@@ -22,7 +23,7 @@ def report_pong(unique_id):
     print available_dict
     return True
 
-server = SimpleXMLRPCServer(("10.148.0.254", 1138))
+server = SimpleXMLRPCServer((config.user_ip, 1138))
 server.register_function(report_ratio, "report_ratio")
 server.register_function(report_ping, "report_ping")
 server.register_function(report_pong, "report_pong")

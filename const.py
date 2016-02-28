@@ -6,7 +6,7 @@ nosql_classes = {
         "mongodb": "MongoDBHandler",
         "riak": "RiakHandler",
         "redis": "RedisHandler",
-        "bigcouch": "CouchDBHandler",
+        "bigcouch": "BigCouchHandler",
         "hbase": "HBaseHandler"
         }
 deploy_folder = 'deploy'

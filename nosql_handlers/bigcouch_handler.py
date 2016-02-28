@@ -5,7 +5,7 @@ import data_gen
 from nosql_handler import NoSQLHandler
 
 
-class CouchDBHandler(NoSQLHandler):
+class BigCouchHandler(NoSQLHandler):
 
     def __init__(self, ip_list):
         self.ip_list = ip_list
