@@ -1,7 +1,7 @@
 from deploy import *
 from populate_rebels import do_populate
 from populate_emperor import populate_read, populate_write, populate_update
-from consumer_control import start_all_consumers, stop_all_consumers
+from consumer_control import start_all_consumers, stop_all_consumers, gather_all_reports, clear_all_reports
 import cmd
 import config
 import const
@@ -174,6 +174,15 @@ class Zelush(cmd.Cmd):
         """Stop all consumers"""
         stop_all_consumers()
 
+    # gather all reports
+    def do_gather_reports(self, line):
+        """Gather reports from all consumers"""
+        gather_all_reports()
+
+    # clear all reports
+    def do_clear_reports(self, line):
+        """Clear reports from all consumers"""
+        clear_all_reports()
 
     def do_EOF(self, line):
         return True

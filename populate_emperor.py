@@ -58,16 +58,6 @@ def populate_queue_update(nosql, queue_name, amount, granularity, varying=False)
     print "Finished populating %s" % queue_name
 
 
-# send a start consuming message
-def start_consumer(queue_name):
-    start_consuming.apply_async(args=[0], queue=queue_name)
-
-
-# send a stop consuming message
-def stop_consumer(queue_name):
-    stop_consuming.apply_async(args=[0], queue=queue_name)
-
-
 # a multiprocess implementation of the queue population with read tasks
 def populate_read(lots_of_args):
     p = Process(target=populate_queue_read, args=lots_of_args)

@@ -4,6 +4,7 @@ import signal
 import xmlrpclib
 from datetime import datetime
 from celery import Celery
+from multiprocessing import Process
 
 app = Celery('tasks', broker='amqp://<%=rabbit_user%>:<%=rabbit_pass%>@<%=rabbit_ip%>/<%=rabbit_vhost%>')
 proxy = xmlrpclib.ServerProxy("http://<%=user_ip%>:1138/")
@@ -15,26 +16,21 @@ last_second = 0
 command = 'celery -A tasks worker --loglevel=info -n <%=worker_name%> --concurrency=<%=concurrency%> -Q <%=consume_queue%>'
 process = subprocess.Popen(command, stderr=subprocess.PIPE, stdout=subprocess.PIPE, shell=True)
 
+def report_ratio_basic(unique_id, ratio):
+    proxy.report_ratio(unique_id, ratio)
+
+def report_ratio(arguments):
+    p = Process(target=report_ratio_basic, args=arguments)
+    p.start()
+
 try:
     for line in iter(process.stderr.readline, ''):
-        if 'tasks.read_nosql' in line and 'succeeded' in line:
-            line_time = line[1:24]
-    	    nb_tasks += 1
-    	    dt = datetime.strptime(line_time, '%Y-%m-%d %H:%M:%S,%f')
-    	    if first:
-    	        first_dt = dt
-    	        first = False
-    	    diff = dt - first_dt
-            ratio = nb_tasks/(diff.seconds + 1.0)
-
-            if (diff.seconds + 1) % 5 == 0 and  diff.seconds + 1 != last_second:
-                proxy.report_ratio("<%=worker_name%>", ratio)
-            last_second = diff.seconds + 1
-
-        if 'tasks.write_nosql' in line and 'succeeded' in line:
-            line_time = line[1:24]
+        if 'succeeded' in line:
+            line_list = line.split(' ')
             nb_tasks += 1
-            dt = datetime.strptime(line_time, '%Y-%m-%d %H:%M:%S,%f')
+            dt = datetime.strptime(line_list[1][:-1], '%H:%M:%S,%f')
+            print line_list[1][:-1], line_list[-2][:-2]
+
             if first:
                 first_dt = dt
                 first = False
@@ -42,28 +38,8 @@ try:
             ratio = nb_tasks/(diff.seconds + 1.0)
 
             if (diff.seconds + 1) % 5 == 0 and  diff.seconds + 1 != last_second:
-                proxy.report_ratio("<%=worker_name%>", ratio)
+                report_ratio(("<%=worker_name%>", ratio))
             last_second = diff.seconds + 1
-
-        if 'tasks.update_nosql' in line and 'succeeded' in line:
-            line_time = line[1:24]
-            nb_tasks += 1
-            dt = datetime.strptime(line_time, '%Y-%m-%d %H:%M:%S,%f')
-            if first:
-                first_dt = dt
-                first = False
-            diff = dt - first_dt
-            ratio = nb_tasks/(diff.seconds + 1.0)
-
-            if (diff.seconds + 1) % 5 == 0 and  diff.seconds + 1 != last_second:
-                proxy.report_ratio("<%=worker_name%>", ratio)
-            last_second = diff.seconds + 1
-
-        if 'tasks.start_consuming' in line and 'succeeded' in line:
-            proxy.report_ping("<%=worker_name%>")
-
-        if 'tasks.stop_consuming' in line and 'succeeded' in line:
-            proxy.report_pong("<%=worker_name%>")
 
 except KeyboardInterrupt:
     os.killpg(process.pid, signal.SIGTERM)

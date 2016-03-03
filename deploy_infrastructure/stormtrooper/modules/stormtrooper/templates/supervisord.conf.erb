@@ -30,7 +30,8 @@ files = /etc/supervisor/conf.d/*.conf
 [program:stream_analysis]
 command=python <%=deploy_home%>/stream_analysis.py
 user=opennebula
-stderr_logfile=/var/log/stream_analysis.err.log
+stderr_logfile=/var/log/supervisor/stream_analysis.err
+stdout_logfile=/var/log/supervisor/stream_analysis.out
 directory=<%=deploy_home%>
 autostart=false
 autorestart=true
