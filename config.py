@@ -1,6 +1,9 @@
 # User IP - the Ip of the machine which will initiate the test
 user_ip = '8.8.8.8'
 
+# concurrency lever
+concurrency = 4
+
 # RabbitMq IP aka emperor
 emperor_ip = "10.141.0.154"
 
@@ -14,7 +17,7 @@ rabbit_pass = "kimmel"
 rabbit_vhost = "live"
 
 # NoSQL Ip list (comma separated, eg a.a.a.a, b.b.b.b)
-nosql_ip = "8.8.8.8"
+nosql_ips = ["8.8.8.8"]
 
 # mongo primary ip
 mongo_primary_ip = '8.8.8.8'

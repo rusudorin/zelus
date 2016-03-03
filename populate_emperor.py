@@ -1,11 +1,14 @@
 from tasks import read_nosql, write_nosql, update_nosql, start_consuming, stop_consuming
 from random import randint
+from multiprocessing import Process
 import config
 
 global NoSQLHandler
 
 
+# populate a queue with read tasks
 def populate_queue_read(nosql, queue_name, amount):
+    print "Populating %s..." % queue_name
     handler = get_nosql_handler(nosql, [config.mongo_primary_ip])
 
     generated_timestamp_list = []
@@ -17,9 +20,12 @@ def populate_queue_read(nosql, queue_name, amount):
 
     for i in range(0, len(generated_timestamp_list)):
         read_nosql.apply_async(args=[generated_timestamp_list[i]], queue=queue_name)
+    print "Finished populating %s" % queue_name
 
 
+# populate a queue with write tasks
 def populate_queue_write(queue_name, amount, granularity, varying=False):
+    print "Populating %s..." % queue_name
 
     for i in range(0, amount):
         if varying:
@@ -29,9 +35,12 @@ def populate_queue_write(queue_name, amount, granularity, varying=False):
 
         write_nosql.apply_async(args=[write_size], queue=queue_name)
 
+    print "Finished populating %s" % queue_name
 
+
+# populate a queue with update tasks
 def populate_queue_update(nosql, queue_name, amount, granularity, varying=False):
-
+    print "Populating %s..." % queue_name
     handler = get_nosql_handler(nosql, [config.mongo_primary_ip])
 
     timestamp_list = handler.get_timestamp_list()
@@ -46,13 +55,38 @@ def populate_queue_update(nosql, queue_name, amount, granularity, varying=False)
 
         update_nosql.apply_async(args=[timestamp_list[index], write_size], queue=queue_name)
 
+    print "Finished populating %s" % queue_name
 
+
+# send a start consuming message
 def start_consumer(queue_name):
     start_consuming.apply_async(args=[0], queue=queue_name)
 
 
+# send a stop consuming message
 def stop_consumer(queue_name):
     stop_consuming.apply_async(args=[0], queue=queue_name)
+
+
+# a multiprocess implementation of the queue population with read tasks
+def populate_read(lots_of_args):
+    p = Process(target=populate_queue_read, args=lots_of_args)
+    p.start()
+    return p
+
+
+# a multiprocess implementation of the queue population with write tasks
+def populate_write(lots_of_args):
+    p = Process(target=populate_queue_write, args=lots_of_args)
+    p.start()
+    return p
+
+
+# a multiprocess implementation of the queue population with update tasks
+def populate_update(lots_of_args):
+    p = Process(target=populate_queue_update, args=lots_of_args)
+    p.start()
+    return p
 
 
 def get_nosql_handler(nosql, ips):

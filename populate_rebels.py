@@ -1,7 +1,7 @@
-import argparse
-import sys
-import subprocess
 import const
+import config
+import subprocess
+import sys
 
 global NoSQLHandler
 
@@ -34,41 +34,31 @@ def set_environment(nosql):
         from nosql_handlers.hbase_handler import HBaseHandler as NoSQLHandler
 
 
-def do_populate(ip_list, granularity, total_size, keyspace, columns, nosql):
+def do_populate(nosql, granularity, total_size):
     # basic checks
-
-    if not ip_list:
-        print "No ips"
-        sys.exit(1)
-
     if not granularity:
         print "No granularity"
-        sys.exit(2)
+        sys.exit(1)
 
     if not total_size:
         print "No total_size"
-        sys.exit(3)
-
-    if not keyspace:
-        print "No keyspace"
-        sys.exit(4)
-
-    if columns > total_size:
-        print "Cannot have more columns than the total number of bytes"
-        sys.exit(5)
+        sys.exit(2)
 
     if nosql not in const.nosql_list:
         print "NoSQL datastore not supported"
-        sys.exit(5)
+        sys.exit(3)
 
     set_environment(nosql)
 
     # get the session
-    nosql = NoSQLHandler(ip_list)
+    nosql = NoSQLHandler(config.nosql_ips)
 
+    print "Populating rebels"
     i = 1
     while i * granularity <= total_size:
 
         # if the item was not added then do not increment the counter
         if nosql.perform_write(granularity):
             i += 1
+
+    print "Finished populating"

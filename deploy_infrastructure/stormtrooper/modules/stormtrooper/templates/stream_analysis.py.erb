@@ -64,8 +64,6 @@ try:
 
         if 'tasks.stop_consuming' in line and 'succeeded' in line:
             proxy.report_pong("<%=worker_name%>")
-            os.system("ps auwx | grep 'celery' | grep 'worker' | awk '{print $2}' | xargs kill -9")
-            os.killpg(process.pid, signal.SIGTERM)
 
 except KeyboardInterrupt:
     os.killpg(process.pid, signal.SIGTERM)

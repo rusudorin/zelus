@@ -1,8 +1,14 @@
+from multiprocessing import Process
 import deploy_infrastructure.deploy_helper as di
 import deploy_nosql.deploy_helper as dn
-
 import config
 import const
+
+
+def stormtrooper(lots_of_args):
+    p = Process(target=deploy_stormtrooper, args=lots_of_args)
+    p.start()
+    p.join()
 
 
 # launch an emperor node
@@ -40,12 +46,18 @@ def deploy_stormtrooper(user, host, nosql, worker_name, concurrency, queue):
     if nosql not in const.nosql_list:
         return "Nope"
 
+    nosql_string = ''
+    for ip in config.nosql_ips:
+        nosql_string += ip + ","
+
+    nosql_string = nosql_string[:-1]
+
     d = {
             "templ_rabbit_ip": config.emperor_ip,
             "templ_rabbit_user": config.rabbit_user,
             "templ_rabbit_pass": config.rabbit_pass,
             "templ_rabbit_vhost": config.rabbit_vhost,
-            "templ_nosql_ip": config.nosql_ip,
+            "templ_nosql_ip": nosql_string,
             "templ_deploy_home": "/home/opennebula",  # TODO: temporary, change back once not using opennebula
             # "templ_deploy_home": "/home/" + user,
             "templ_handler_name": nosql + "_handler",
@@ -121,7 +133,7 @@ def deploy_bigcouch(user, host):
 
 
 # launch hbase
-def deploy_hbase(user, host, hostname):
+def deploy_hbase(user, host):
 
     regionservers = ''
     for ip in config.hbase_ips:
@@ -148,7 +160,7 @@ def deploy_hbase(user, host, hostname):
                    "  <value>/usr/local/zookeeper</value>\n</property>"
 
     d = {
-            "templ_hostname": hostname,
+            "templ_hostname": const.hbase_hostname,
             "templ_ip_address": host,
             "templ_regionservers": regionservers,
             "templ_hbase_sites": hbase_sites

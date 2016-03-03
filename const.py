@@ -10,3 +10,4 @@ nosql_classes = {
         "hbase": "HBaseHandler"
         }
 deploy_folder = 'deploy'
+hbase_hostname = 'hbase'

@@ -1,6 +1,7 @@
 from populate_emperor import start_consumer, stop_consumer
 import config
 import os
+import subprocess
 
 
 class Consumer:
@@ -15,10 +16,11 @@ class Consumer:
         start_consumer(self.unique_id)
 
     def stop_consuming(self):
-        os.system("ssh %s@%s 'supervisorctl stop stream_analysis'" % (self.user, self.ip))
-        os.system("ssh %s@%s 'ps auwx | grep 'celery' | grep 'worker' | awk '{print $2}' | xargs kill -9" %
-                  (self.user, self.ip))
         stop_consumer(self.unique_id)
+        os.system("ssh %s@%s 'supervisorctl stop stream_analysis'" % (self.user, self.ip))
+        subprocess.Popen(['ssh', "%s@%s" % (self.user, self.ip),
+                          "ps auwx | grep 'celery' | grep 'worker' | awk '{print $2}' | xargs kill -9"],
+                         stdout=subprocess.PIPE)  # if it looks hacky, thank the official celery page. They provided it
 
     def ping(self):
         print self.unique_id
@@ -34,10 +36,12 @@ def ping_all():
 def start_all_consumers():
     for i in range(0, len(config.consumer_ips)):
         c = Consumer('root', config.consumer_ips[i], "worker%d" % i)
+        print "Starting worker%d..." % i
         c.start_consuming()
 
 
 def stop_all_consumers():
     for i in range(0, len(config.consumer_ips)):
         c = Consumer('root', config.consumer_ips[i], "worker%d" % i)
+        print "Stopping worker%d..." % i
         c.stop_consuming()
