@@ -8,7 +8,7 @@ import const
 def stormtrooper(lots_of_args):
     p = Process(target=deploy_stormtrooper, args=lots_of_args)
     p.start()
-    p.join()
+    return p
 
 
 # launch an emperor node

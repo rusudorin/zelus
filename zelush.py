@@ -1,7 +1,8 @@
 from deploy import *
 from populate_rebels import do_populate
 from populate_emperor import populate_read, populate_write, populate_update
-from consumer_control import start_all_consumers, stop_all_consumers, gather_all_reports, clear_all_reports
+from consumer_control import start_all_consumers, stop_all_consumers, gather_all_reports, clear_all_reports, \
+    ping_all, show_report
 import cmd
 import config
 import const
@@ -68,9 +69,16 @@ class Zelush(cmd.Cmd):
                 print "No such nosql available"
                 return
 
+            process_list = []
+
             for i in range(0, len(config.consumer_ips)):
-                stormtrooper(('root', config.consumer_ips[i], nosql, "worker%d" % i,
-                              config.concurrency, "worker%d" % i))
+                p = stormtrooper(('root', config.consumer_ips[i], nosql, "worker%d" % i,
+                                 config.concurrency, "worker%d" % i))
+                process_list.append(p)
+
+                for p in process_list:
+                    p.join()
+
         except Exception as e:
             print e
 
@@ -164,6 +172,11 @@ class Zelush(cmd.Cmd):
             completitions = [f for f in const.nosql_list if f.startswith(text)]
         return completitions
 
+    # ping all consumers
+    def do_ping(self, line):
+        """Ping all consumers"""
+        ping_all()
+
     # start all consumers
     def do_start_consumers(self, line):
         """Starts all consumers"""
@@ -183,6 +196,11 @@ class Zelush(cmd.Cmd):
     def do_clear_reports(self, line):
         """Clear reports from all consumers"""
         clear_all_reports()
+
+    # show reports
+    def do_show(self, line):
+        """Show reports"""
+        show_report()
 
     def do_EOF(self, line):
         return True

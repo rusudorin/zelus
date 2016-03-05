@@ -22,7 +22,6 @@ class Consumer:
                          stdout=subprocess.PIPE)  # if it looks hacky, thank the official celery page. They provided it
 
     def ping(self):
-        print self.unique_id
         os.system("ssh %s@%s 'supervisorctl status stream_analysis'" % (self.user, self.ip))
 
     def gather_report(self):
@@ -38,6 +37,7 @@ class Consumer:
 def ping_all():
     for i in range(0, len(config.consumer_ips)):
         c = Consumer('root', config.consumer_ips[i], "worker%d" % i)
+        print "Pinging worker%d..." % i
         c.ping()
 
 
@@ -88,16 +88,20 @@ def show_report():
                     continue
 
                 timestamp, result = line_split
-                dt = datetime.datetime.strptime(timestamp, '%H:%M:%S,%f')
+                try:
+                    dt = datetime.datetime.strptime(timestamp, '%H:%M:%S,%f')
 
-                # for simplicity the timestamp has only hours, minutes and seconds
-                dt = dt.replace(year=today.year, month=today.month, day=today.day)
+                    # for simplicity the timestamp has only hours, minutes and seconds
+                    dt = dt.replace(year=today.year, month=today.month, day=today.day)
 
-                # if there are identical timestamps, keep adding one microsecond
-                while dt in timestamp_dict:
-                    dt = dt.replace(microsecond=dt.microsecond + 1)
+                    # if there are identical timestamps, keep adding one microsecond
+                    while dt in timestamp_dict:
+                        dt = dt.replace(microsecond=dt.microsecond + 1)
 
-                timestamp_dict[dt] = float(result.strip())
+                    timestamp_dict[dt] = float(result.strip())
+                except Exception as e:
+                    print e
+                    pass
 
     timestamp_list = [key for key in timestamp_dict]
     timestamp_list.sort()
