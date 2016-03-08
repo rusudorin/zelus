@@ -40,9 +40,9 @@ class stormtrooper{
 
   define celery_file (){
     $worker_nb = $title
-    file { "stream_analysis${title}.py":
+    file { "stream_analysis${worker_id}_${title}.py":
       content => template("stormtrooper/stream_analysis.py.erb"),
-      path => "${deploy_home}/stream_analysis${title}.py",
+      path => "${deploy_home}/stream_analysis${worker_id}_${title}.py",
       owner => root,
       group => root,
       require => Exec['install_celery']

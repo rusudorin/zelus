@@ -14,16 +14,19 @@ class Consumer:
         self.worker_number = worker_number
 
     def start_consuming(self):
-        os.system("ssh %s@%s 'supervisorctl start stream_analysis%d'" % (self.user, self.ip, self.worker_number))
+        os.system("ssh %s@%s 'supervisorctl start stream_analysis%d_%d'" % (self.user, self.ip, self.unique_id,
+                                                                            self.worker_number))
 
     def stop_consuming(self):
-        os.system("ssh %s@%s 'supervisorctl stop stream_analysis%d'" % (self.user, self.ip, self.worker_number))
+        os.system("ssh %s@%s 'supervisorctl stop stream_analysis%d_%d'" % (self.user, self.ip, self.unique_id,
+                                                                           self.worker_number))
         subprocess.Popen(['ssh', "%s@%s" % (self.user, self.ip),
                           "ps auwx | grep 'celery' | grep 'worker' | awk '{print $2}' | xargs kill -9"],
                          stdout=subprocess.PIPE)  # if it looks hacky, thank the official celery page. They provided it
 
     def ping(self):
-        os.system("ssh %s@%s 'supervisorctl status stream_analysis%d'" % (self.user, self.ip, self.worker_number))
+        os.system("ssh %s@%s 'supervisorctl status stream_analysis%d_%d'" % (self.user, self.ip, self.unique_id,
+                                                                             self.worker_number))
 
     def gather_report(self):
         print "Gathering report from worker%d_%d" % (self.unique_id, self.worker_number)
@@ -40,7 +43,7 @@ def ping_all():
     for i in range(0, len(config.consumer_ips)):
         for worker in range(0, config.worker_numbers[config.consumer_ips[i]]):
             c = Consumer('root', config.consumer_ips[i], i, worker)
-            print "Pinging worker%d..." % i
+            print "\nPinging worker%d_%d..." % (i, worker)
             c.ping()
 
 

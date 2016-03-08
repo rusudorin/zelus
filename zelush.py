@@ -72,13 +72,12 @@ class Zelush(cmd.Cmd):
             process_list = []
 
             for i in range(0, len(config.consumer_ips)):
-                for worker in range(0, config.worker_numbers[config.consumer_ips[i]]):
-                    p = stormtrooper(('root', config.consumer_ips[i], nosql, i,
-                                     config.concurrency, worker))
-                    process_list.append(p)
+                p = stormtrooper(('root', config.consumer_ips[i], nosql, i,
+                                 config.concurrency, config.worker_numbers[config.consumer_ips[i]]))
+                process_list.append(p)
 
-                for p in process_list:
-                    p.join()
+            for p in process_list:
+                p.join()
 
         except Exception as e:
             print e
