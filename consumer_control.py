@@ -80,35 +80,36 @@ def show_report():
 
     # iterate in all files
     for i in range(0, len(config.consumer_ips)):
+        for worker in range(0, config.worker_numbers[config.consumer_ips[i]]):
 
-        # in case there is one missing, skip
-        if not os.path.isfile("report_worker%d.out" % i):
-            continue
+            # in case there is one missing, skip
+            if not os.path.isfile("report_worker%d_%d.out" % (i, worker)):
+                continue
 
-        with open("report_worker%d.out" % i) as f:
-            # iterate in all lines
-            for line in f:
-                line_split = line.split(' ')
+            with open("report_worker%d_%d.out" % (i, worker)) as f:
+                # iterate in all lines
+                for line in f:
+                    line_split = line.split(' ')
 
-                # there might be lines which are defective
-                if len(line_split) != 2:
-                    continue
+                    # there might be lines which are defective
+                    if len(line_split) != 2:
+                        continue
 
-                timestamp, result = line_split
-                try:
-                    dt = datetime.datetime.strptime(timestamp, '%H:%M:%S,%f')
+                    timestamp, result = line_split
+                    try:
+                        dt = datetime.datetime.strptime(timestamp, '%H:%M:%S,%f')
 
-                    # for simplicity the timestamp has only hours, minutes and seconds
-                    dt = dt.replace(year=today.year, month=today.month, day=today.day)
+                        # for simplicity the timestamp has only hours, minutes and seconds
+                        dt = dt.replace(year=today.year, month=today.month, day=today.day)
 
-                    # if there are identical timestamps, keep adding one microsecond
-                    while dt in timestamp_dict:
-                        dt = dt.replace(microsecond=dt.microsecond + 1)
+                        # if there are identical timestamps, keep adding one microsecond
+                        while dt in timestamp_dict:
+                            dt = dt.replace(microsecond=dt.microsecond + 1)
 
-                    timestamp_dict[dt] = float(result.strip())
-                except Exception as e:
-                    print e
-                    pass
+                        timestamp_dict[dt] = float(result.strip())
+                    except Exception as e:
+                        print e
+                        pass
 
     timestamp_list = [key for key in timestamp_dict]
     timestamp_list.sort()

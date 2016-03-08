@@ -12,7 +12,8 @@ class stormtrooper{
   $handler_class = '$templ_handler_class'
   $extra_pip_packages = '$templ_extra_pip_packages'
   $extra_apt_packages = '$templ_extra_apt_packages'
-  $worker_name = '$templ_worker_name'
+  $worker_id = $templ_worker_name
+  $worker_name = worker$templ_worker_name
   $worker_number = $templ_worker_number
   $concurrency = '$templ_concurrency'
   $current_ip = '$templ_current_ip'
