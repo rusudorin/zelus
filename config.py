@@ -31,6 +31,10 @@ redis_ips = []
 # consumers ips
 consumer_ips = []
 
+# will contain an ip and the number of workers for that ip
+# ex: {"8.8.8.8": 1, "1.1.1.1": 4}
+worker_numbers = {}
+
 # cassandra ips
 cassandra_ips = []
 

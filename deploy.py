@@ -23,7 +23,7 @@ def deploy_emperor(user, host):
 
 
 # launch a stormtrooper
-def deploy_stormtrooper(user, host, nosql, worker_name, concurrency, queue):
+def deploy_stormtrooper(user, host, nosql, worker_name, concurrency, worker_number):
 
     extra_pip_packages = {
         "mongodb": "pymongo",
@@ -65,8 +65,8 @@ def deploy_stormtrooper(user, host, nosql, worker_name, concurrency, queue):
             "templ_extra_pip_packages": extra_pip_packages[nosql],
             "templ_extra_apt_packages": extra_apt_packages[nosql],
             "templ_worker_name": worker_name,
+            "templ_worker_number": range(0, worker_number),
             "templ_concurrency": concurrency,
-            "templ_consume_queue": queue,
             "templ_current_ip": host,
             "templ_user_ip": config.user_ip
         }

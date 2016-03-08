@@ -7,64 +7,71 @@ import subprocess
 
 class Consumer:
 
-    def __init__(self, user, ip, unique_id):
+    def __init__(self, user, ip, unique_id, worker_number):
         self.user = user
         self.ip = ip
         self.unique_id = unique_id
+        self.worker_number = worker_number
 
     def start_consuming(self):
-        os.system("ssh %s@%s 'supervisorctl start stream_analysis'" % (self.user, self.ip))
+        os.system("ssh %s@%s 'supervisorctl start stream_analysis%d'" % (self.user, self.ip, self.worker_number))
 
     def stop_consuming(self):
-        os.system("ssh %s@%s 'supervisorctl stop stream_analysis'" % (self.user, self.ip))
+        os.system("ssh %s@%s 'supervisorctl stop stream_analysis%d'" % (self.user, self.ip, self.worker_number))
         subprocess.Popen(['ssh', "%s@%s" % (self.user, self.ip),
                           "ps auwx | grep 'celery' | grep 'worker' | awk '{print $2}' | xargs kill -9"],
                          stdout=subprocess.PIPE)  # if it looks hacky, thank the official celery page. They provided it
 
     def ping(self):
-        os.system("ssh %s@%s 'supervisorctl status stream_analysis'" % (self.user, self.ip))
+        os.system("ssh %s@%s 'supervisorctl status stream_analysis%d'" % (self.user, self.ip, self.worker_number))
 
     def gather_report(self):
-        print "Gathering report from %s" % self.unique_id
-        os.system("scp %s@%s:/var/log/supervisor/stream_analysis.out report_%s.out" %
-                  (self.user, self.ip, self.unique_id))
+        print "Gathering report from worker%d_%d" % (self.unique_id, self.worker_number)
+        os.system("scp %s@%s:/var/log/supervisor/stream_analysis%d_%d.out report_worker%d_%d.out" %
+                  (self.user, self.ip, self.unique_id, self.worker_number, self.unique_id, self.worker_number))
 
     def clear_report(self):
-        print "Clearing report from %s" % self.unique_id
-        os.system("ssh %s@%s 'rm /var/log/supervisor/stream_analysis.out'" % (self.user, self.ip))
+        print "Clearing report from worker%d_%d" % (self.unique_id, self.worker_number)
+        os.system("ssh %s@%s 'rm /var/log/supervisor/stream_analysis%d_%d.out'" %
+                  (self.user, self.ip, self.unique_id, self.worker_number))
 
 
 def ping_all():
     for i in range(0, len(config.consumer_ips)):
-        c = Consumer('root', config.consumer_ips[i], "worker%d" % i)
-        print "Pinging worker%d..." % i
-        c.ping()
+        for worker in range(0, config.worker_numbers[config.consumer_ips[i]]):
+            c = Consumer('root', config.consumer_ips[i], i, worker)
+            print "Pinging worker%d..." % i
+            c.ping()
 
 
 def start_all_consumers():
     for i in range(0, len(config.consumer_ips)):
-        c = Consumer('root', config.consumer_ips[i], "worker%d" % i)
-        print "Starting worker%d..." % i
-        c.start_consuming()
+        for worker in range(0, config.worker_numbers[config.consumer_ips[i]]):
+            c = Consumer('root', config.consumer_ips[i], i, worker)
+            print "Starting worker%d_%d..." % (i, worker)
+            c.start_consuming()
 
 
 def stop_all_consumers():
     for i in range(0, len(config.consumer_ips)):
-        c = Consumer('root', config.consumer_ips[i], "worker%d" % i)
-        print "Stopping worker%d..." % i
-        c.stop_consuming()
+        for worker in range(0, config.worker_numbers[config.consumer_ips[i]]):
+            c = Consumer('root', config.consumer_ips[i], i, worker)
+            print "Stopping worker%d_%d..." % (i, worker)
+            c.stop_consuming()
 
 
 def gather_all_reports():
     for i in range(0, len(config.consumer_ips)):
-        c = Consumer('root', config.consumer_ips[i], "worker%d" % i)
-        c.gather_report()
+        for worker in range(0, config.worker_numbers[config.consumer_ips[i]]):
+            c = Consumer('root', config.consumer_ips[i], i, worker)
+            c.gather_report()
 
 
 def clear_all_reports():
     for i in range(0, len(config.consumer_ips)):
-        c = Consumer('root', config.consumer_ips[i], "worker%d" % i)
-        c.clear_report()
+        for worker in range(0, config.worker_numbers[config.consumer_ips[i]]):
+            c = Consumer('root', config.consumer_ips[i], i, worker)
+            c.clear_report()
 
 
 def show_report():

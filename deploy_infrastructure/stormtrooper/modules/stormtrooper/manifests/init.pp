@@ -13,8 +13,8 @@ class stormtrooper{
   $extra_pip_packages = '$templ_extra_pip_packages'
   $extra_apt_packages = '$templ_extra_apt_packages'
   $worker_name = '$templ_worker_name'
+  $worker_number = $templ_worker_number
   $concurrency = '$templ_concurrency'
-  $consume_queue = '$templ_consume_queue'
   $current_ip = '$templ_current_ip'
   $user_ip = '$templ_user_ip'
 
@@ -35,11 +35,17 @@ class stormtrooper{
     require => Exec['install_dependencies']
   }
 
-  file { "${deploy_home}/stream_analysis.py":
-    content => template("stormtrooper/stream_analysis.py.erb"),
-    owner => root,
-    group => root,
-    require => Exec['install_celery']
+  celery_file{ $worker_number:}
+
+  define celery_file (){
+    $worker_nb = $title
+    file { "stream_analysis${title}.py":
+      content => template("stormtrooper/stream_analysis.py.erb"),
+      path => "${deploy_home}/stream_analysis${title}.py",
+      owner => root,
+      group => root,
+      require => Exec['install_celery']
+    }
   }
 
   file { "${deploy_home}/${tasks_script}":

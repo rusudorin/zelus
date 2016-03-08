@@ -13,7 +13,7 @@ nb_tasks = 0
 first = True
 last_second = 0
 
-command = 'celery -A tasks worker --loglevel=info -n <%=worker_name%> --concurrency=<%=concurrency%> -Q <%=consume_queue%>'
+command = 'celery -A tasks worker --loglevel=info -n <%=worker_name%>_<%=worker_nb%> --concurrency=<%=concurrency%> -Q <%=worker_name%>_<%=worker_nb%>'
 process = subprocess.Popen(command, stderr=subprocess.PIPE, stdout=subprocess.PIPE, shell=True)
 
 def report_ratio_basic(unique_id, ratio):
@@ -38,7 +38,7 @@ try:
             ratio = nb_tasks/(diff.seconds + 1.0)
 
             if (diff.seconds + 1) % 5 == 0 and  diff.seconds + 1 != last_second:
-                report_ratio(("<%=worker_name%>", ratio))
+                report_ratio(("<%=worker_name%>_<%=worker_nb%>", ratio))
             last_second = diff.seconds + 1
 
 except KeyboardInterrupt:

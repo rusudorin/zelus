@@ -115,8 +115,9 @@ class Zelush(cmd.Cmd):
             process_list = []
 
             for i in range(0, len(config.consumer_ips)):
-                p = populate_read((nosql, "worker%d" % i, int(amount)))
-                process_list.append(p)
+                for worker in range(0, config.worker_numbers[config.consumer_ips[i]]):
+                    p = populate_read((nosql, "worker%d_%d" % (i, worker), int(amount)))
+                    process_list.append(p)
             
             for p in process_list:
                 p.join()
@@ -140,8 +141,9 @@ class Zelush(cmd.Cmd):
             process_list = []
 
             for i in range(0, len(config.consumer_ips)):
-                p = populate_write(("worker%d" % i, int(amount), int(granularity)))
-                process_list.append(p)
+                for worker in range(0, config.worker_numbers[config.consumer_ips[i]]):
+                    p = populate_write(("worker%d_%d" % (i, worker), int(amount), int(granularity)))
+                    process_list.append(p)
 
             for p in process_list:
                 p.join()
@@ -157,8 +159,9 @@ class Zelush(cmd.Cmd):
             process_list = []
 
             for i in range(0, len(config.consumer_ips)):
-                p = populate_update((nosql, "worker%d" % i, int(amount), int(granularity)))
-                process_list.append(p)
+                for worker in range(0, config.worker_numbers[config.consumer_ips[i]]):
+                    p = populate_update((nosql, "worker%d_%d" % (i, worker), int(amount), int(granularity)))
+                    process_list.append(p)
 
             for p in process_list:
                 p.join()
