@@ -21,13 +21,3 @@ def write_nosql(x):
 def update_nosql(x, y):
     nosql.perform_update(x, y)
     return 0
-
-
-@app.task
-def start_consuming(x):
-    return True
-
-
-@app.task
-def stop_consuming(x):
-    return True

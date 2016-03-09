@@ -39,3 +39,10 @@ autorestart=true
 
 <% end -%>
 
+[program:cpu_usage<%=worker_id%>]
+command=sh <%=deploy_home%>/cpu_usage.sh
+stderr_logfile=/var/log/supervisor/cpu_usage<%=worker_id%>.err
+stdout_logfile=/var/log/supervisor/cpu_usage<%=worker_id%>.out
+directory=<%=deploy_home%>
+autostart=false
+autorestart=true

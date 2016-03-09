@@ -63,6 +63,13 @@ class stormtrooper{
     require => Exec['install_celery']
   }
 
+  file { "${deploy_home}/cpu_usage.sh":
+    source => "puppet:///modules/stormtrooper/cpu_usage.sh",
+    owner => root,
+    group => root,
+    require => Exec['install_celery']
+  }
+
   file { "${deploy_home}/const.py":
     source => "puppet:///modules/stormtrooper/const.py",
     owner => root,

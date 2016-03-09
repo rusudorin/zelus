@@ -15,7 +15,7 @@ class Zelush(cmd.Cmd):
     # nosql deployment
     def do_deploy_nosql(self, line):
         """Deploys a nosql datastore
-        deploy_nosql [nosql] [user] [root]"""
+        deploy_nosql [nosql] [user] [host]"""
         try:
             nosql, user, host = line.split(' ')
 

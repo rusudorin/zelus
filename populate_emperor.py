@@ -1,4 +1,4 @@
-from tasks import read_nosql, write_nosql, update_nosql, start_consuming, stop_consuming
+from tasks import read_nosql, write_nosql, update_nosql
 from random import randint
 from multiprocessing import Process
 import config
