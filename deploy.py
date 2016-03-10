@@ -14,7 +14,7 @@ def stormtrooper(lots_of_args):
 # launch an emperor node
 def deploy_emperor(user, host):
     d = {
-            "templ_rabbit_ip": config.emperor_ip,
+            "templ_rabbit_ip": host,
             "templ_rabbit_user": config.rabbit_user,
             "templ_rabbit_pass": config.rabbit_pass,
             "templ_rabbit_vhost": config.rabbit_vhost
@@ -24,6 +24,13 @@ def deploy_emperor(user, host):
 
 # launch a stormtrooper
 def deploy_stormtrooper(user, host, nosql, worker_name, concurrency, worker_number):
+
+    emperor_ip = 0
+
+    for key in config.worker_emperors:
+        if host in config.worker_emperors[key]:
+            emperor_ip = key
+            break
 
     extra_pip_packages = {
         "mongodb": "pymongo",
@@ -53,7 +60,7 @@ def deploy_stormtrooper(user, host, nosql, worker_name, concurrency, worker_numb
     nosql_string = nosql_string[:-1]
 
     d = {
-            "templ_rabbit_ip": config.emperor_ip,
+            "templ_rabbit_ip": emperor_ip,
             "templ_rabbit_user": config.rabbit_user,
             "templ_rabbit_pass": config.rabbit_pass,
             "templ_rabbit_vhost": config.rabbit_vhost,

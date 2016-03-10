@@ -35,6 +35,11 @@ consumer_ips = []
 # ex: {"8.8.8.8": 1, "1.1.1.1": 4}
 worker_numbers = {}
 
+# will contain a dictionary that will split the consumer_ips to different emperors
+# ex: {'8.8.8.8': consumer_ips[:4], '1.1.1.1': consumer_ips[5:]}
+# please use list splitting as the ip order is important
+worker_emperors = {}
+
 # cassandra ips
 cassandra_ips = []
 

@@ -49,6 +49,7 @@ def ping_all():
             c.ping()
     for i in range(0, len(config.nosql_ips)):
         os.system("ssh %s@%s 'supervisorctl status cpu_usage'" % ('root', config.nosql_ips[i]))
+        os.system("ssh %s@%s 'supervisorctl status cpu_load'" % ('root', config.nosql_ips[i]))
         # TODO move users to config
 
 
@@ -110,9 +111,15 @@ def show_report():
     median_amount = 1000
     timestamp_dict = {}
     today = datetime.datetime.now()
+    # daca = False
 
     # iterate in all files
     for i in range(0, len(config.consumer_ips)):
+        # if not daca:
+        #     daca = True
+        # else:
+        #     continue
+
         for worker in range(0, config.worker_numbers[config.consumer_ips[i]]):
 
             # in case there is one missing, skip
@@ -149,17 +156,69 @@ def show_report():
 
     timestamp_list = [key for key in timestamp_dict]
     timestamp_list.sort()
-    timestamp_median_list = get_median_list(timestamp_list, median_amount)
+    timestamp_median_list = get_result_median_list(timestamp_list, median_amount)
     timestamp_median_list = [key - timestamp_median_list[0] for key in timestamp_median_list]
 
     result_list = [timestamp_dict[timestamp] for timestamp in timestamp_list]
-    result_median_list = get_median_list(result_list, median_amount)
+    result_median_list = get_result_median_list(result_list, median_amount)
+
+    # with open("timestamps.out", 'w') as f:
+    #    f.write(json.dumps(timestamp_list))
+
+    # with open("results.out", 'w') as f:
+    #    f.write(json.dumps(result_list))
 
     fig, ax = plt.subplots()
-    ax.set_xlim([min(timestamp_median_list), max(timestamp_median_list)])
-    ax.set_ylim([0, max(result_median_list)])
-    ax.plot(timestamp_median_list, result_median_list, linestyle="-", marker=None)
+    # ax.set_xlim([min(timestamp_median_list), max(timestamp_median_list)])
+    # ax.set_ylim([0,max(result_median_list)])
+    ax.plot(timestamp_median_list, result_median_list, linestyle="-", linewidth=2.0, marker=None,
+            label='NoSQL response time')
 
+    plt.xlabel('Run time [s]')
+    plt.ylabel('Execution time [s]')
+
+    for i in range(0, len(config.nosql_ips)):
+
+        usage_list = []
+        # in case there is one missing, skip
+        if not os.path.isfile("cpu_usage_nosql%s.out" % config.nosql_ips[i]):
+            continue
+
+        with open("cpu_usage_nosql%s.out" % config.nosql_ips[i]) as f:
+            # iterate in all lines
+            for line in f:
+                line_split = line.split(' ')
+                usage = line_split[-4]  # cpu usage is the fourth in vmstat
+
+                usage_list.append(float(usage)/100)
+
+        max_len = int(max(timestamp_median_list))
+        max_len = len(usage_list)
+        ax.plot(range(0, max_len), usage_list[0: max_len], linestyle=':', label='CPU Usage %s' % config.nosql_ips[i])
+
+    for i in range(0, len(config.nosql_ips)):
+
+        load_list = []
+        # in case there is one missing, skip
+        if not os.path.isfile("cpu_load_nosql%s.out" % config.nosql_ips[i]):
+            continue
+
+        with open("cpu_load_nosql%s.out" % config.nosql_ips[i]) as f:
+            # iterate in all lines
+            for line in f:
+                line_split = line.split('load average:')
+                line_split = line_split[1].split(',') # get only everything after load average
+                load = line_split[0]  # cpu usage is the fourth in vmstat
+
+                load_list.append(float(load)/(100 * config.concurrency))
+
+        max_len = int(max(timestamp_median_list))
+        max_len = len(load_list)
+        ax.plot(range(0, max_len), load_list[0: max_len], linestyle='--', label='CPU Load %s' % config.nosql_ips[i])
+
+    legend = ax.legend(loc='upper center', shadow=True)
+    frame = legend.get_frame()
+    frame.set_facecolor('0.90')
     plt.show()
 
 
@@ -167,7 +226,7 @@ def get_sublist(split_list, amount):
     return [split_list[i:i+amount] for i in range(0, len(split_list), amount)]
 
 
-def get_median_list(results, amount):
+def get_result_median_list(results, amount):
 
     median_list = []
     for sublist in get_sublist(results, amount):
