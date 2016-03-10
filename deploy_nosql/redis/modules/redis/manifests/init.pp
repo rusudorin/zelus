@@ -46,7 +46,7 @@ class redis{
   }
 
   file { "${home_folder}/cpu_usage.sh":
-    source => "puppet:///modules/stormtrooper/cpu_usage.sh",
+    source => "puppet:///modules/redis/cpu_usage.sh",
     owner => root,
     group => root,
     require => Exec['run_redis']

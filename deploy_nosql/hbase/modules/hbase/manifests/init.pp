@@ -106,7 +106,7 @@ class hbase {
   }
 
   file { "${home_folder}/cpu_usage.sh":
-    source => "puppet:///modules/stormtrooper/cpu_usage.sh",
+    source => "puppet:///modules/hbase/cpu_usage.sh",
     owner => root,
     group => root,
     require => Exec['install_hbase']

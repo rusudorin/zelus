@@ -98,7 +98,7 @@ class cassandra{
   }
 
   file { "${home_folder}/cpu_usage.sh":
-    source => "puppet:///modules/stormtrooper/cpu_usage.sh",
+    source => "puppet:///modules/cassandra/cpu_usage.sh",
     owner => root,
     group => root,
     require => Exec['unarchive']

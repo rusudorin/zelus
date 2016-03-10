@@ -55,7 +55,7 @@ class bigcouch{
   }
 
   file { "${home_folder}/cpu_usage.sh":
-    source => "puppet:///modules/stormtrooper/cpu_usage.sh",
+    source => "puppet:///modules/bigcouch/cpu_usage.sh",
     owner => root,
     group => root,
     require => Exec['make_install']

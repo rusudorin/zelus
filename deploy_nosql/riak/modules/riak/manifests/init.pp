@@ -31,7 +31,7 @@ class riak{
   }
 
   file { "${home_folder}/cpu_usage.sh":
-    source => "puppet:///modules/stormtrooper/cpu_usage.sh",
+    source => "puppet:///modules/riak/cpu_usage.sh",
     owner => root,
     group => root,
     require => File['/etc/riak/riak.conf']

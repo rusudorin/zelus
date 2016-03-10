@@ -49,7 +49,7 @@ class mongodb{
   exec { 'set_java': command => '/bin/echo "export LC_ALL=C" >> /home/opennebula/.profile' }
 
   file { "${home_folder}/cpu_usage.sh":
-    source => "puppet:///modules/stormtrooper/cpu_usage.sh",
+    source => "puppet:///modules/mongodb/cpu_usage.sh",
     owner => root,
     group => root,
     require => File['/etc/mongod.conf']
