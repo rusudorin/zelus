@@ -27,14 +27,10 @@ serverurl=unix:///var/run//supervisor.sock ; use a unix:// URL  for a unix socke
 [include]
 files = /etc/supervisor/conf.d/*.conf
 
-<% worker_number.each do |worker_nb| -%>
-[program:stream_analysis<%=worker_id%>_<%=worker_nb%>]
-command=python <%=deploy_home%>/stream_analysis<%=worker_id%>_<%=worker_nb%>.py
-user=opennebula
-stderr_logfile=/var/log/supervisor/stream_analysis<%=worker_id%>_<%=worker_nb%>.err
-stdout_logfile=/var/log/supervisor/stream_analysis<%=worker_id%>_<%=worker_nb%>.out
-directory=<%=deploy_home%>
+[program:cpu_usage]
+command=sh <%=home_folder%>/cpu_usage.sh
+stderr_logfile=/var/log/supervisor/cpu_usage.err
+stdout_logfile=/var/log/supervisor/cpu_usage.out
+directory=<%=home_folder%>
 autostart=false
 autorestart=true
-
-<% end -%>

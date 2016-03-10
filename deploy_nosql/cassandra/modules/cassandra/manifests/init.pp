@@ -3,6 +3,7 @@ class cassandra{
   $cassandra_version = "3.3"
   $cassandra_ftp = "http://archive.apache.org/dist/cassandra/${cassandra_version}/apache-cassandra-${cassandra_version}-bin.tar.gz"
   $cassandra_home = "/home/$templ_user/cassandra"
+  $home_folder = "/home/$templ_user"
   $cassandra_tarball = "cassandra.tar.gz"
   $seeds_list = "$templ_seeds_list"
   $listen_address = "$templ_listen_address"
@@ -94,6 +95,19 @@ class cassandra{
     user => $templ_user,
     path => $path,
     require => File["${cassandra_home}/conf/cassandra.yaml"]
+  }
+
+  file { "${home_folder}/cpu_usage.sh":
+    source => "puppet:///modules/stormtrooper/cpu_usage.sh",
+    owner => root,
+    group => root,
+    require => Exec['unarchive']
+  }
+
+  exec {"update_supervisor":
+    command => "supervisorctl update",
+    path => $path,
+    require => File["${home_folder}/cpu_usage.sh"]
   }
 
 }

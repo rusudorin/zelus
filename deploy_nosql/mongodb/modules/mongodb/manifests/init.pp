@@ -3,6 +3,7 @@ class mongodb{
   $bind_ip = "$templ_bind_ip"
   $replica_set_name = "$templ_replica_set_name"
   $path = ['/usr/bin', '/usr', '/usr/sbin', '/bin', '/sbin']
+  $home_folder = "$templ_home_folder"
 
   exec { "add_key":
     command => "sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927",
@@ -46,5 +47,18 @@ class mongodb{
   }
 
   exec { 'set_java': command => '/bin/echo "export LC_ALL=C" >> /home/opennebula/.profile' }
+
+  file { "${home_folder}/cpu_usage.sh":
+    source => "puppet:///modules/stormtrooper/cpu_usage.sh",
+    owner => root,
+    group => root,
+    require => File['/etc/mongod.conf']
+  }
+
+  exec {"update_supervisor":
+    command => "supervisorctl update",
+    path => $path,
+    require => File["${home_folder}/cpu_usage.sh"]
+  }
 
 }

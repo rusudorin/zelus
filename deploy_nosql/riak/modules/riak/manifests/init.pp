@@ -1,7 +1,8 @@
 class riak{
 
   $bind_ip = "$templ_bind_ip"
-  $path = ['/usr/bin', '/usr', '/usr/sbin', '/sbin', '/usr/local/sbin', '/bin'] 
+  $path = ['/usr/bin', '/usr', '/usr/sbin', '/sbin', '/usr/local/sbin', '/bin']
+  $home_folder = '$templ_home_folder'
 
   exec {"add_repo":
     command => 'curl https://packagecloud.io/install/repositories/basho/riak/script.deb.sh | sudo bash',
@@ -27,6 +28,19 @@ class riak{
     command => 'sudo riak start',
     path => $path,
     require => File['/etc/riak/riak.conf']
+  }
+
+  file { "${home_folder}/cpu_usage.sh":
+    source => "puppet:///modules/stormtrooper/cpu_usage.sh",
+    owner => root,
+    group => root,
+    require => File['/etc/riak/riak.conf']
+  }
+
+  exec {"update_supervisor":
+    command => "supervisorctl update",
+    path => $path,
+    require => File["${home_folder}/cpu_usage.sh"]
   }
 
 }

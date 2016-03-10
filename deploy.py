@@ -79,7 +79,8 @@ def deploy_mongodb(user, host):
 
     d = {
         "templ_bind_ip": host,
-        "templ_replica_set_name": const.keyspace_name
+        "templ_replica_set_name": const.keyspace_name,
+        "templ_home_folder": "/home/" + user
     }
 
     dn.deploy('mongodb', user, host, d)
@@ -90,7 +91,7 @@ def deploy_redis(user, host):
 
     d = {
         "templ_bind_ip": host,
-        "templ_home": "/home/" + user,
+        "templ_home_folder": "/home/" + user
     }
 
     dn.deploy('redis', user, host, d)
@@ -101,6 +102,7 @@ def deploy_riak(user, host):
 
     d = {
             "templ_bind_ip": host,
+            "templ_home_folder": "/home/" + user
         }
 
     dn.deploy('riak', user, host, d)
@@ -163,6 +165,7 @@ def deploy_hbase(user, host):
             "templ_hostname": const.hbase_hostname,
             "templ_ip_address": host,
             "templ_regionservers": regionservers,
-            "templ_hbase_sites": hbase_sites
+            "templ_hbase_sites": hbase_sites,
+            "templ_home_folder": "/home/" + user
         }
     dn.deploy('hbase', user, host, d)

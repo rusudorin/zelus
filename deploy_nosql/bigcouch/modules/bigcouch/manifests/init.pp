@@ -53,4 +53,17 @@ class bigcouch{
     path => $path,
     require => File['/opt/bigcouch/etc/default.ini']
   }
+
+  file { "${home_folder}/cpu_usage.sh":
+    source => "puppet:///modules/stormtrooper/cpu_usage.sh",
+    owner => root,
+    group => root,
+    require => Exec['make_install']
+  }
+
+  exec {"update_supervisor":
+    command => "supervisorctl update",
+    path => $path,
+    require => File["${home_folder}/cpu_usage.sh"]
+  }
 }

@@ -5,6 +5,7 @@ class hbase {
   $ip_address = "$templ_ip_address"
   $regionservers = "$templ_regionservers"
   $hbase_sites = "$hbase_sites"
+  $home_folder = "$templ_home_folder"
 
   exec { "add_java_repo":
     command => "sudo add-apt-repository -y ppa:openjdk-r/ppa",
@@ -102,5 +103,18 @@ class hbase {
     owner => hbase,
     group => hbase,
     require => Exec['install_hbase']
+  }
+
+  file { "${home_folder}/cpu_usage.sh":
+    source => "puppet:///modules/stormtrooper/cpu_usage.sh",
+    owner => root,
+    group => root,
+    require => Exec['install_hbase']
+  }
+
+  exec {"update_supervisor":
+    command => "supervisorctl update",
+    path => $path,
+    require => File["${home_folder}/cpu_usage.sh"]
   }
 }

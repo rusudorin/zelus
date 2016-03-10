@@ -1,7 +1,7 @@
 class redis{
 
   $bind_ip = "$templ_bind_ip"
-  $redis_home = "$templ_home"
+  $home_folder = "$templ_home_folder"
   $redis_version = "redis-3.0.7"
   $path = ['/usr/bin', '/usr', '/usr/sbin', '/sbin', '/usr/local/sbin', '/bin']
 
@@ -11,10 +11,10 @@ class redis{
   }
 
   exec {"download_redis":
-    command => "wget http://download.redis.io/releases/$redis_version.tar.gz -O $redis_home/${redis_version}.tar.gz",
+    command => "wget http://download.redis.io/releases/$redis_version.tar.gz -O $$home_folder/${redis_version}.tar.gz",
     timeout => 1800,
     path => $path,
-    creates => "$redis_home/$redis_version.tar.gz",
+    creates => "$home_folder/$redis_version.tar.gz",
     require => Exec['install_make']
   }
 
@@ -43,6 +43,19 @@ class redis{
     command => "${redis_home}/${redis_version}/src/redis-server ${redis_home}/${redis_version}/redis.conf &",
     path => $path,
     require => File["${redis_home}/${redis_version}/redis.conf"]
+  }
+
+  file { "${home_folder}/cpu_usage.sh":
+    source => "puppet:///modules/stormtrooper/cpu_usage.sh",
+    owner => root,
+    group => root,
+    require => Exec['run_redis']
+  }
+
+  exec {"update_supervisor":
+    command => "supervisorctl update",
+    path => $path,
+    require => File["${home_folder}/cpu_usage.sh"]
   }
 
 }
