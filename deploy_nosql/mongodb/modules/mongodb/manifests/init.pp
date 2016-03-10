@@ -55,10 +55,24 @@ class mongodb{
     require => File['/etc/mongod.conf']
   }
 
+  file { "${home_folder}/cpu_load.sh":
+    source => "puppet:///modules/mongodb/cpu_load.sh",
+    owner => root,
+    group => root,
+    require => File['/etc/mongod.conf']
+  }
+
+  file {"/etc/supervisor/supervisord.conf":
+    content => template("mongodb/supervisord.conf.erb"),
+    owner => root,
+    group => root,
+    require => File['/etc/mongod.conf']
+  }
+
   exec {"update_supervisor":
     command => "supervisorctl update",
     path => $path,
-    require => File["${home_folder}/cpu_usage.sh"]
+    require => File["/etc/supervisor/supervisord.conf"]
   }
 
 }

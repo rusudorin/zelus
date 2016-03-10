@@ -53,14 +53,17 @@ def ping_all():
 
 
 def start_all_consumers():
+    for i in range(0, len(config.nosql_ips)):
+        print "Starting nosql %s" % config.nosql_ips[i]
+        os.system("ssh %s@%s 'supervisorctl start cpu_usage'" % ('root', config.nosql_ips[i]))
+        os.system("ssh %s@%s 'supervisorctl start cpu_load'" % ('root', config.nosql_ips[i]))
+        # TODO move users to config
+
     for i in range(0, len(config.consumer_ips)):
         for worker in range(0, config.worker_numbers[config.consumer_ips[i]]):
             c = Consumer('root', config.consumer_ips[i], i, worker)
             print "Starting worker%d_%d..." % (i, worker)
             c.start_consuming()
-    for i in range(0, len(config.nosql_ips)):
-        os.system("ssh %s@%s 'supervisorctl start cpu_usage'" % ('root', config.nosql_ips[i]))
-        # TODO move users to config
 
 
 def stop_all_consumers():
@@ -70,7 +73,9 @@ def stop_all_consumers():
             print "Stopping worker%d_%d..." % (i, worker)
             c.stop_consuming()
     for i in range(0, len(config.nosql_ips)):
+        print "Stopping nosql %s" % config.nosql_ips[i]
         os.system("ssh %s@%s 'supervisorctl stop cpu_usage'" % ('root', config.nosql_ips[i]))
+        os.system("ssh %s@%s 'supervisorctl stop cpu_load'" % ('root', config.nosql_ips[i]))
         # TODO move users to config
 
 
@@ -81,7 +86,10 @@ def gather_all_reports():
             c.gather_report()
 
     for i in range(0, len(config.nosql_ips)):
+        print "Gathering report from %s" % config.nosql_ips[i]
         os.system("scp %s@%s:/var/log/supervisor/cpu_usage.out cpu_usage_nosql%s.out" %
+                  ('root', config.nosql_ips[i], config.nosql_ips[i]))
+        os.system("scp %s@%s:/var/log/supervisor/cpu_load.out cpu_load_nosql%s.out" %
                   ('root', config.nosql_ips[i], config.nosql_ips[i]))
         # TODO move users to config
 
@@ -92,7 +100,9 @@ def clear_all_reports():
             c = Consumer('root', config.consumer_ips[i], i, worker)
             c.clear_report()
     for i in range(0, len(config.nosql_ips)):
+        print "Clearing report from %s" % config.nosql_ips[i]
         os.system("ssh %s@%s 'rm /var/log/supervisor/cpu_usage.out'" % ('root', config.nosql_ips[i]))
+        os.system("ssh %s@%s 'rm /var/log/supervisor/cpu_load.out'" % ('root', config.nosql_ips[i]))
         # TODO move users to config
 
 

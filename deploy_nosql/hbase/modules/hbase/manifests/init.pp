@@ -112,9 +112,23 @@ class hbase {
     require => Exec['install_hbase']
   }
 
+  file { "${home_folder}/cpu_load.sh":
+    source => "puppet:///modules/hbase/cpu_load.sh",
+    owner => root,
+    group => root,
+    require => Exec['install_hbase']
+  }
+
+  file {"/etc/supervisor/supervisord.conf":
+    content => template("hbase/supervisord.conf.erb"),
+    owner => root,
+    group => root,
+    require => Exec['install_hbase']
+  }
+
   exec {"update_supervisor":
     command => "supervisorctl update",
     path => $path,
-    require => File["${home_folder}/cpu_usage.sh"]
+    require => File["/etc/supervisor/supervisord.conf"]
   }
 }

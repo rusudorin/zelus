@@ -61,9 +61,23 @@ class bigcouch{
     require => Exec['make_install']
   }
 
+  file { "${home_folder}/cpu_load.sh":
+    source => "puppet:///modules/bigcouch/cpu_load.sh",
+    owner => root,
+    group => root,
+    require => Exec['make_install']
+  }
+
+  file {"/etc/supervisor/supervisord.conf":
+    content => template("bigcouch/supervisord.conf.erb"),
+    owner => root,
+    group => root,
+    require => Exec['make_install']
+  }
+
   exec {"update_supervisor":
     command => "supervisorctl update",
     path => $path,
-    require => File["${home_folder}/cpu_usage.sh"]
+    require => File["/etc/supervisor/supervisord.conf"]
   }
 }

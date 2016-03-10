@@ -37,10 +37,24 @@ class riak{
     require => File['/etc/riak/riak.conf']
   }
 
+  file { "${home_folder}/cpu_load.sh":
+    source => "puppet:///modules/riak/cpu_load.sh",
+    owner => root,
+    group => root,
+    require => File['/etc/riak/riak.conf']
+  }
+
+  file {"/etc/supervisor/supervisord.conf":
+    content => template("riak/supervisord.conf.erb"),
+    owner => root,
+    group => root,
+    require => File['/etc/riak/riak.conf']
+  }
+
   exec {"update_supervisor":
     command => "supervisorctl update",
     path => $path,
-    require => File["${home_folder}/cpu_usage.sh"]
+    require => File["/etc/supervisor/supervisord.conf"]
   }
 
 }

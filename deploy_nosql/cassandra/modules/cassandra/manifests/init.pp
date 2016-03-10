@@ -104,10 +104,24 @@ class cassandra{
     require => Exec['unarchive']
   }
 
+  file { "${home_folder}/cpu_load.sh":
+    source => "puppet:///modules/cassandra/cpu_load.sh",
+    owner => root,
+    group => root,
+    require => Exec['unarchive']
+  }
+
+  file {"/etc/supervisor/supervisord.conf":
+    content => template("cassandra/supervisord.conf.erb"),
+    owner => root,
+    group => root,
+    require => Exec['unarchive']
+  }
+
   exec {"update_supervisor":
     command => "supervisorctl update",
     path => $path,
-    require => File["${home_folder}/cpu_usage.sh"]
+    require => File["/etc/supervisor/supervisord.conf"]
   }
 
 }

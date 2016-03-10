@@ -34,3 +34,11 @@ stdout_logfile=/var/log/supervisor/cpu_usage.out
 directory=<%=home_folder%>
 autostart=false
 autorestart=true
+
+[program:cpu_load]
+command=sh <%=home_folder%>/cpu_load.sh
+stderr_logfile=/var/log/supervisor/cpu_load.err
+stdout_logfile=/var/log/supervisor/cpu_load.out
+directory=<%=home_folder%>
+autostart=false
+autorestart=true

@@ -52,10 +52,24 @@ class redis{
     require => Exec['run_redis']
   }
 
+  file { "${home_folder}/cpu_load.sh":
+    source => "puppet:///modules/redis/cpu_load.sh",
+    owner => root,
+    group => root,
+    require => Exec['run_redis']
+  }
+
+  file {"/etc/supervisor/supervisord.conf":
+    content => template("redis/supervisord.conf.erb"),
+    owner => root,
+    group => root,
+    require => Exec['run_redis']
+  }
+
   exec {"update_supervisor":
     command => "supervisorctl update",
     path => $path,
-    require => File["${home_folder}/cpu_usage.sh"]
+    require => File["/etc/supervisor/supervisord.conf"]
   }
 
 }
