@@ -28,6 +28,10 @@ def populate_queue_read(nosql, stormtrooper_id, worker_id, amount):
     generated_timestamp_list = []
     timestamp_list = handler.get_timestamp_list()
 
+    if len(timestamp_list) == 0:
+        print "NoSQL is empty"
+        return
+
     for i in range(0, amount):
         index = randint(0, len(timestamp_list) - 1)
         generated_timestamp_list.append(timestamp_list[index-1])

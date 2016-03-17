@@ -19,20 +19,20 @@ class redis{
   }
 
   exec {'unarchive':
-    command => "tar xzf ${redis_home}/${redis_version}.tar.gz -C ${redis_home}",
+    command => "tar xzf ${home_folder}/${redis_version}.tar.gz -C ${home_folder}",
     path => $path,
-    creates => "${redis_home}/${redis_version}",
+    creates => "${home_folder}/${redis_version}",
     require => Exec['download_redis']
   } 
 
   exec {'make':
     command => "make",
     path => $path,
-    cwd => "${redis_home}/${redis_version}",
+    cwd => "${home_folder}/${redis_version}",
     require => Exec['unarchive']
   }
 
-  file {"${redis_home}/${redis_version}/redis.conf":
+  file {"${home_folder}/${redis_version}/redis.conf":
     content => template("redis/redis.conf.erb"),
     owner => root,
     group => root,
@@ -40,9 +40,9 @@ class redis{
   }
 
   exec {'run_redis':
-    command => "${redis_home}/${redis_version}/src/redis-server ${redis_home}/${redis_version}/redis.conf &",
+    command => "${home_folder}/${redis_version}/src/redis-server ${home_folder}/${redis_version}/redis.conf &",
     path => $path,
-    require => File["${redis_home}/${redis_version}/redis.conf"]
+    require => File["${home_folder}/${redis_version}/redis.conf"]
   }
 
   file { "${home_folder}/cpu_usage.sh":
