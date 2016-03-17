@@ -28,8 +28,8 @@ try:
         if 'succeeded' in line:
             line_list = line.split(' ')
             nb_tasks += 1
-            dt = datetime.strptime(line_list[1][:-1], '%H:%M:%S,%f')
-            print line_list[1][:-1], line_list[-2][:-2]
+            dt = datetime.strptime(line_list[0][1:] + " " + line_list[1][:-1], '%Y-%m-%d %H:%M:%S,%f')
+            print line_list[0][1:] + ":" +line_list[1][:-1], line_list[-2][:-2]
 
             if first:
                 first_dt = dt
