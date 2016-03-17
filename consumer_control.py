@@ -137,7 +137,7 @@ def show_report():
 
                     timestamp, result = line_split
                     try:
-                        dt = datetime.datetime.strptime(timestamp, '%H:%M:%S,%f')
+                        dt = datetime.datetime.strptime(timestamp, '%Y-%m-%d:%H:%M:%S,%f')
 
                         # for simplicity the timestamp has only hours, minutes and seconds
                         dt = dt.replace(year=today.year, month=today.month, day=today.day)
