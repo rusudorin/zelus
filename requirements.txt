@@ -1,7 +1,2 @@
-pycassa
-pymongo==3.0.2
-riak==2.2.0
-couchdbkit==0.6.5
 cryptography==0.9.1
-happybase==0.9
 matplotlib==1.4.3
