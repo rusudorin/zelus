@@ -68,7 +68,6 @@ class CassandraHandler(NoSQLHandler):
         """
         gen_string = data_gen.generate_str(granularity)
 
-        timestamp = time.time()
         return self.cf.insert(timestamp, {"column": gen_string})
 
     def get_timestamp_list(self):

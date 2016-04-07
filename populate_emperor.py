@@ -140,7 +140,7 @@ def get_nosql_handler(nosql, ips):
         from nosql_handlers.riak_handler import RiakHandler as NoSQLHandler
     elif nosql == 'redis':
         from nosql_handlers.redis_handler import RedisHandler as NoSQLHandler
-    elif nosql == 'bigcouchdb':
+    elif nosql == 'bigcouch':
         from nosql_handlers.bigcouch_handler import BigCouchHandler as NoSQLHandler
     elif nosql == 'hbase':
         from nosql_handlers.hbase_handler import HBaseHandler as NoSQLHandler

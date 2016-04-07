@@ -19,6 +19,9 @@ rabbit_vhost = "live"
 # NoSQL Ip list (comma separated, eg a.a.a.a, b.b.b.b)
 nosql_ips = ["8.8.8.8"]
 
+# riak ip list
+riak_ips = ["8.8.8.8"]
+
 # mongo primary ip
 mongo_primary_ip = '8.8.8.8'
 

@@ -2,7 +2,7 @@ from celery import Celery
 from <%=handler_name%> import <%=handler_class%>
 import json
 app = Celery('tasks', broker='amqp://<%=rabbit_user%>:<%=rabbit_pass%>@<%=rabbit_ip%>/<%=rabbit_vhost%>')
-nosql = <%=handler_class%>(['<%=nosql_ip%>'])
+nosql = <%=handler_class%>([<%=nosql_ip%>])
 
 
 @app.task

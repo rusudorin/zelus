@@ -75,4 +75,4 @@ class BigCouchHandler(NoSQLHandler):
         """
         retrieves an element using the unique timestamp
         """
-        return self.session.get(timestamp[0])
+        return self.session.get(timestamp)
