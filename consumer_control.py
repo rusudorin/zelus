@@ -40,6 +40,8 @@ class Consumer:
         print "Clearing report from worker%d_%d" % (self.unique_id, self.worker_number)
         os.system("ssh %s@%s 'rm /var/log/supervisor/stream_analysis%d_%d.out'" %
                   (self.user, self.ip, self.unique_id, self.worker_number))
+        os.system("ssh %s@%s 'rm /var/log/supervisor/stream_analysis%d_%d.err'" %
+                  (self.user, self.ip, self.unique_id, self.worker_number))
 
 
 def ping_all():

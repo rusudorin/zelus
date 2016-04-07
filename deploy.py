@@ -53,11 +53,11 @@ def deploy_stormtrooper(user, host, nosql, worker_name, concurrency, worker_numb
     if nosql not in const.nosql_list:
         return "Nope"
 
-    nosql_string = ''
+    nosql_string = '"'
     for ip in config.nosql_ips:
-        nosql_string += ip + ","
+        nosql_string += ip + '","'
 
-    nosql_string = nosql_string[:-1]
+    nosql_string = nosql_string[:-2]
 
     d = {
             "templ_rabbit_ip": emperor_ip,

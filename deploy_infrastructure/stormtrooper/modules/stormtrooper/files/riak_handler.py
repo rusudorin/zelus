@@ -41,7 +41,6 @@ class RiakHandler(NoSQLHandler):
 
         timestamp = time.time()
         inserted_id = self.session.new("%.6f" % timestamp, data=gen_string).store().key
-        print inserted_id
         return inserted_id
 
     def perform_update(self, timestamp, granularity):

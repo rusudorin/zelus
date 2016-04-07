@@ -11,7 +11,7 @@ class riak{
   }
 
   exec { "install_riak":
-    command => 'sudo apt-get install -y riak=2.1.1-1',
+    command => 'sudo apt-get install -y riak',
     user => root,
     path => $path,
     require => Exec['add_repo']

@@ -1,14 +1,14 @@
 from SimpleXMLRPCServer import SimpleXMLRPCServer
 import config
+import json
 
 ratio_dict = {}
 available_dict = {}
 
 
 def report_ratio(unique_id, ratio):
-    # print unique_id + " is consuming with " + str(ratio)
     ratio_dict[unique_id] = ratio
-    print ratio_dict
+    print json.dumps(ratio_dict, indent=4)
     return True
 
 

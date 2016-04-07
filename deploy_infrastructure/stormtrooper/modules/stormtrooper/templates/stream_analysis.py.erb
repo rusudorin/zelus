@@ -13,7 +13,7 @@ nb_tasks = 0
 first = True
 last_second = 0
 
-command = 'celery -A tasks worker --loglevel=info -n <%=worker_name%>_<%=worker_nb%> --concurrency=<%=concurrency%> -Q <%=worker_name%>_<%=worker_nb%>'
+command = 'celery -A tasks worker --loglevel=info -n <%=worker_name%>_<%=worker_nb%> --concurrency=<%=concurrency%> -Q <%=worker_name%>_<%=worker_nb%> -Ofair'
 process = subprocess.Popen(command, stderr=subprocess.PIPE, stdout=subprocess.PIPE, shell=True)
 
 def report_ratio_basic(unique_id, ratio):

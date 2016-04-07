@@ -68,7 +68,7 @@ class HBaseHandler(NoSQLHandler):
         """
         gets all the items from the table
         """
-        return [str(key()) for key, value in self.session.scan()]
+        return [str(key) for key, value in self.session.scan()]
 
     def get_element_by_timestamp(self, timestamp):
         """
