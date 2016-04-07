@@ -32,6 +32,8 @@ def set_environment(nosql):
         from nosql_handlers.bigcouch_handler import BigCouchHandler as NoSQLHandler
     elif nosql == 'hbase':
         from nosql_handlers.hbase_handler import HBaseHandler as NoSQLHandler
+    else:
+        raise Exception('No such NoSQL')
 
 
 def do_populate(nosql, granularity, total_size):

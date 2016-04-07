@@ -20,12 +20,12 @@ class Zelush(cmd.Cmd):
             nosql, user, host = line.split(' ')
 
             if not nosql or not user or not host:
-                print "Mising arguments"
+                print "Missing arguments"
                 return
 
             if nosql not in const.nosql_list:
                 print "No such nosql available"
-                return 
+                return
 
             else:
                 if nosql == 'cassandra':
@@ -45,10 +45,10 @@ class Zelush(cmd.Cmd):
 
     def complete_deploy_nosql(self, text, line, begidx, endidx):
         if not text:
-            completitions = const.nosql_list
+            completions = const.nosql_list
         else:
-            completitions = [f for f in const.nosql_list if f.startswith(text)]
-        return completitions
+            completions = [f for f in const.nosql_list if f.startswith(text)]
+        return completions
 
     # emperor deployment
     def do_deploy_emperor(self, line):
@@ -84,10 +84,10 @@ class Zelush(cmd.Cmd):
 
     def complete_deploy_stormtrooper(self, text, line, begidx, endidx):
         if not text:
-            completitions = const.nosql_list
+            completions = const.nosql_list
         else:
-            completitions = [f for f in const.nosql_list if f.startswith(text)]
-        return completitions
+            completions = [f for f in const.nosql_list if f.startswith(text)]
+        return completions
 
     # populate rebels (nosqls)
     def do_populate_rebels(self, line):
@@ -101,10 +101,10 @@ class Zelush(cmd.Cmd):
 
     def complete_populate_rebels(self, text, line, begidx, endidx):
         if not text:
-            completitions = const.nosql_list
+            completions = const.nosql_list
         else:
-            completitions = [f for f in const.nosql_list if f.startswith(text)]
-        return completitions
+            completions = [f for f in const.nosql_list if f.startswith(text)]
+        return completions
 
     # populate emperor with read tasks for all stormtroopers
     def do_populate_read(self, line):
@@ -127,10 +127,10 @@ class Zelush(cmd.Cmd):
 
     def complete_populate_read(self, text, line, begidx, endidx):
         if not text:
-            completitions = const.nosql_list
+            completions = const.nosql_list
         else:
-            completitions = [f for f in const.nosql_list if f.startswith(text)]
-        return completitions
+            completions = [f for f in const.nosql_list if f.startswith(text)]
+        return completions
 
     # populate emperor with write tasks for all stormtroopers
     def do_populate_write(self, line):
@@ -170,10 +170,10 @@ class Zelush(cmd.Cmd):
 
     def complete_populate_update(self, text, line, begidx, endidx):
         if not text:
-            completitions = const.nosql_list
+            completions = const.nosql_list
         else:
-            completitions = [f for f in const.nosql_list if f.startswith(text)]
-        return completitions
+            completions = [f for f in const.nosql_list if f.startswith(text)]
+        return completions
 
     # ping all consumers
     def do_ping(self, line):

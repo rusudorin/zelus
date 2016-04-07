@@ -1,4 +1,3 @@
-# will perform a read or write to a certain nosql
 from celery import Celery
 from nosql_handlers.mongodb_handler import MongoDBHandler
 import config
