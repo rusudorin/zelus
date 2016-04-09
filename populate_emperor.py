@@ -1,5 +1,6 @@
 from random import randint
 from multiprocessing import Process
+from numpy.random import choice
 import config
 import celery
 
@@ -69,6 +70,38 @@ def populate_queue_write(stormtrooper_id, worker_id, amount, granularity, varyin
             write_size = granularity
 
         write_nosql.apply_async(args=[write_size], queue=queue_name)
+
+    print "Finished populating %s" % queue_name
+
+
+# populate a queue with write tasks
+def populate_queue_mix(nosql, stormtrooper_id, worker_id, amount, granularity, percent, varying=False):
+    queue_name = "worker%d_%d" % (stormtrooper_id, worker_id)
+    print "Populating %s..." % queue_name
+
+    handler = get_nosql_handler(nosql, [config.mongo_primary_ip])
+
+    generated_timestamp_list = []
+    timestamp_list = handler.get_timestamp_list()
+    elements = ['read', 'write']
+
+    node_ip = config.consumer_ips[stormtrooper_id]
+    emperor_ip = get_emperor_ip(node_ip)
+
+    write_nosql = WriteTask()
+    read_nosql = ReadTask()
+    app = celery.Celery('tasks', broker="amqp://%s:%s@%s/%s" %
+                                        (config.rabbit_user, config.rabbit_pass, emperor_ip, config.rabbit_vhost))
+    write_nosql.bind(app)
+    read_nosql.bind(app)
+
+    for i in range(0, amount):
+        ch = choice(elements, p=[percent, 1-percent])
+        if ch == 'read':
+            index = randint(0, len(timestamp_list) - 1)
+            read_nosql.apply_async(args=[generated_timestamp_list[index]], queue=queue_name)
+        else:
+            write_nosql.apply_async(args=[granularity], queue=queue_name)
 
     print "Finished populating %s" % queue_name
 

@@ -1,3 +1,5 @@
+from celery import Celery
+from populate_emperor import get_emperor_ip
 import config
 import datetime
 import json
@@ -15,9 +17,15 @@ class Consumer:
         self.unique_id = unique_id
         self.worker_number = worker_number
 
-    def start_consuming(self):
+    def start_consuming(self, rate=None, task=None):
         os.system("ssh %s@%s 'supervisorctl start stream_analysis%d_%d'" % (self.user, self.ip, self.unique_id,
                                                                             self.worker_number))
+        if rate is not None and task is not None:
+            app = Celery('tasks', broker="amqp://%s:%s@%s/%s" %
+                                         (config.rabbit_user, config.rabbit_pass, get_emperor_ip(self.ip),
+                                          config.rabbit_vhost))
+
+            app.control.broadcast('rate_limit', arguments={'task_name': task, 'rate_limit': '%d/s' % rate})
 
     def stop_consuming(self):
         os.system("ssh %s@%s 'supervisorctl stop stream_analysis%d_%d'" % (self.user, self.ip, self.unique_id,
