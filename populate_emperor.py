@@ -4,8 +4,6 @@ from numpy.random import choice
 import config
 import celery
 
-global NoSQLHandler
-
 
 class ReadTask(celery.Task):
     name = 'tasks.read_nosql'
@@ -21,22 +19,28 @@ class UpdateTask(celery.Task):
 
 # populate a queue with read tasks
 def populate_queue_read(nosql, stormtrooper_id, worker_id, amount):
+    # set the queue name
     queue_name = "worker%d_%d" % (stormtrooper_id, worker_id)
 
     print "Populating %s..." % queue_name
+
+    # get the corresponding nosql handler
     handler = get_nosql_handler(nosql, [config.mongo_primary_ip])
 
-    generated_timestamp_list = []
+    # get all the unique timestamps (ids)
     timestamp_list = handler.get_timestamp_list()
 
     if len(timestamp_list) == 0:
         print "NoSQL is empty"
         return
 
+    # get random timestamps from the timestamp list
+    generated_timestamp_list = []
     for i in range(0, amount):
         index = randint(0, len(timestamp_list) - 1)
         generated_timestamp_list.append(timestamp_list[index-1])
 
+    # get the consumer_ip
     node_ip = config.consumer_ips[stormtrooper_id]
     emperor_ip = get_emperor_ip(node_ip)
 
@@ -51,7 +55,7 @@ def populate_queue_read(nosql, stormtrooper_id, worker_id, amount):
 
 
 # populate a queue with write tasks
-def populate_queue_write(stormtrooper_id, worker_id, amount, granularity, varying=False):
+def populate_queue_write(stormtrooper_id, worker_id, amount, granularity):
     queue_name = "worker%d_%d" % (stormtrooper_id, worker_id)
     print "Populating %s..." % queue_name
 
@@ -64,18 +68,13 @@ def populate_queue_write(stormtrooper_id, worker_id, amount, granularity, varyin
     write_nosql.bind(app)
 
     for i in range(0, amount):
-        if varying:
-            write_size = randint(0, granularity)
-        else:
-            write_size = granularity
-
-        write_nosql.apply_async(args=[write_size], queue=queue_name)
+        write_nosql.apply_async(args=[granularity], queue=queue_name)
 
     print "Finished populating %s" % queue_name
 
 
 # populate a queue with write tasks
-def populate_queue_mix(nosql, stormtrooper_id, worker_id, amount, granularity, percent, varying=False):
+def populate_queue_mix(nosql, stormtrooper_id, worker_id, amount, granularity, percent):
     queue_name = "worker%d_%d" % (stormtrooper_id, worker_id)
     print "Populating %s..." % queue_name
 
@@ -164,7 +163,6 @@ def populate_update(lots_of_args):
 
 
 def get_nosql_handler(nosql, ips):
-    global NoSQLHandler
     if nosql == 'cassandra':
         from nosql_handlers.cassandra_handler import CassandraHandler as NoSQLHandler
     elif nosql == 'mongodb':
@@ -177,5 +175,7 @@ def get_nosql_handler(nosql, ips):
         from nosql_handlers.bigcouch_handler import BigCouchHandler as NoSQLHandler
     elif nosql == 'hbase':
         from nosql_handlers.hbase_handler import HBaseHandler as NoSQLHandler
+    else:
+        raise Exception('No such NoSQL')
 
     return NoSQLHandler(ips)

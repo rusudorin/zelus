@@ -3,8 +3,6 @@ import config
 import subprocess
 import sys
 
-global NoSQLHandler
-
 
 def get_rand_string(granularity):
     """
@@ -15,11 +13,10 @@ def get_rand_string(granularity):
     return subprocess.check_output(script_cmd, shell=True).strip()
 
 
-def set_environment(nosql):
+def get_environment(nosql):
     """
     Sets the correct imports according to the chosen nosql datastore
     """
-    global NoSQLHandler
     if nosql == 'cassandra':
         from nosql_handlers.cassandra_handler import CassandraHandler as NoSQLHandler
     elif nosql == 'mongodb':
@@ -34,6 +31,7 @@ def set_environment(nosql):
         from nosql_handlers.hbase_handler import HBaseHandler as NoSQLHandler
     else:
         raise Exception('No such NoSQL')
+    return NoSQLHandler
 
 
 def do_populate(nosql, granularity, total_size):
@@ -50,10 +48,10 @@ def do_populate(nosql, granularity, total_size):
         print "NoSQL datastore not supported"
         sys.exit(3)
 
-    set_environment(nosql)
+    handler = get_environment(nosql)
 
     # get the session
-    nosql = NoSQLHandler(config.nosql_ips)
+    nosql = handler(config.nosql_ips)
 
     print "Populating rebels"
     i = 1
