@@ -41,7 +41,7 @@ def populate_queue_read(nosql, stormtrooper_id, worker_id, amount):
         generated_timestamp_list.append(timestamp_list[index-1])
 
     # get the consumer_ip
-    node_ip = config.consumer_ips[stormtrooper_id]
+    node_ip = config.stormtrooper_ips[stormtrooper_id]
     emperor_ip = get_emperor_ip(node_ip)
 
     read_nosql = ReadTask()
@@ -59,7 +59,7 @@ def populate_queue_write(stormtrooper_id, worker_id, amount, granularity):
     queue_name = "worker%d_%d" % (stormtrooper_id, worker_id)
     print "Populating %s..." % queue_name
 
-    node_ip = config.consumer_ips[stormtrooper_id]
+    node_ip = config.stormtrooper_ips[stormtrooper_id]
     emperor_ip = get_emperor_ip(node_ip)
 
     write_nosql = WriteTask()
@@ -84,7 +84,7 @@ def populate_queue_mix(nosql, stormtrooper_id, worker_id, amount, granularity, p
     timestamp_list = handler.get_timestamp_list()
     elements = ['read', 'write']
 
-    node_ip = config.consumer_ips[stormtrooper_id]
+    node_ip = config.stormtrooper_ips[stormtrooper_id]
     emperor_ip = get_emperor_ip(node_ip)
 
     write_nosql = WriteTask()
@@ -113,7 +113,7 @@ def populate_queue_update(nosql, stormtrooper_id, worker_id, amount, granularity
 
     timestamp_list = handler.get_timestamp_list()
 
-    node_ip = config.consumer_ips[stormtrooper_id]
+    node_ip = config.stormtrooper_ips[stormtrooper_id]
     emperor_ip = get_emperor_ip(node_ip)
 
     update_nosql = UpdateTask()
@@ -136,8 +136,8 @@ def populate_queue_update(nosql, stormtrooper_id, worker_id, amount, granularity
 
 def get_emperor_ip(node_ip):
 
-    for key in config.worker_emperors:
-        if node_ip in config.worker_emperors[key]:
+    for key in config.stormtrooper_emperors:
+        if node_ip in config.stormtrooper_emperors[key]:
             return key
 
 

@@ -32,16 +32,16 @@ mongo_secondary_ips = []
 redis_ips = []
 
 # consumers ips
-consumer_ips = []
+stormtrooper_ips = []
 
 # will contain an ip and the number of workers for that ip
 # ex: {"8.8.8.8": 1, "1.1.1.1": 4}
-worker_numbers = {}
+stormtrooper_numbers = {}
 
-# will contain a dictionary that will split the consumer_ips to different emperors
-# ex: {'8.8.8.8': consumer_ips[:4], '1.1.1.1': consumer_ips[5:]}
+# will contain a dictionary that will split the stormtrooper_ips to different emperors
+# ex: {'8.8.8.8': stormtrooper_ips[:4], '1.1.1.1': stormtrooper_ips[5:]}
 # please use list splitting as the ip order is important
-worker_emperors = {}
+stormtrooper_emperors = {}
 
 # cassandra ips
 cassandra_ips = []

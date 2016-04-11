@@ -71,9 +71,9 @@ class Zelush(cmd.Cmd):
 
             process_list = []
 
-            for i in range(0, len(config.consumer_ips)):
-                p = stormtrooper(('root', config.consumer_ips[i], nosql, i,
-                                 config.concurrency, config.worker_numbers[config.consumer_ips[i]]))
+            for i in range(0, len(config.stormtrooper_ips)):
+                p = stormtrooper(('root', config.stormtrooper_ips[i], nosql, i,
+                                  config.concurrency, config.stormtrooper_numbers[config.stormtrooper_ips[i]]))
                 process_list.append(p)
 
             for p in process_list:
@@ -114,8 +114,8 @@ class Zelush(cmd.Cmd):
             nosql, amount = line.split(" ")
             process_list = []
 
-            for i in range(0, len(config.consumer_ips)):
-                for worker in range(0, config.worker_numbers[config.consumer_ips[i]]):
+            for i in range(0, len(config.stormtrooper_ips)):
+                for worker in range(0, config.stormtrooper_numbers[config.stormtrooper_ips[i]]):
                     p = populate_read((nosql, i, worker, int(amount)))
                     process_list.append(p)
             
@@ -140,8 +140,8 @@ class Zelush(cmd.Cmd):
             amount, granularity = line.split(" ")
             process_list = []
 
-            for i in range(0, len(config.consumer_ips)):
-                for worker in range(0, config.worker_numbers[config.consumer_ips[i]]):
+            for i in range(0, len(config.stormtrooper_ips)):
+                for worker in range(0, config.stormtrooper_numbers[config.stormtrooper_ips[i]]):
                     p = populate_write((i, worker, int(amount), int(granularity)))
                     process_list.append(p)
 
@@ -158,8 +158,8 @@ class Zelush(cmd.Cmd):
             nosql, amount, granularity = line.split(" ")
             process_list = []
 
-            for i in range(0, len(config.consumer_ips)):
-                for worker in range(0, config.worker_numbers[config.consumer_ips[i]]):
+            for i in range(0, len(config.stormtrooper_ips)):
+                for worker in range(0, config.stormtrooper_numbers[config.stormtrooper_ips[i]]):
                     p = populate_update((nosql, i, worker, int(amount), int(granularity)))
                     process_list.append(p)
 
