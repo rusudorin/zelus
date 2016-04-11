@@ -1,8 +1,9 @@
 from deploy import *
-from populate_rebels import do_populate
-from populate_emperor import populate_read, populate_write, populate_update
 from consumer_control import start_all_consumers, stop_all_consumers, gather_all_reports, clear_all_reports, \
     ping_all, show_report
+from populate_emperor import populate_read, populate_write, populate_update
+from populate_rebels import do_populate
+from zelus.stormtrooper import Stormtrooper
 import cmd
 import config
 import const
@@ -13,33 +14,30 @@ class Zelush(cmd.Cmd):
     prompt = 'zelush> '
     
     # nosql deployment
-    def do_deploy_nosql(self, line):
+    def do_deploy_nosql(self, nosql):
         """Deploys a nosql datastore
         deploy_nosql [nosql]"""
         try:
-            nosql, user, host = line.split(' ')
-
-            if not nosql or not user or not host:
-                print "Missing arguments"
-                return
-
             if nosql not in const.nosql_list:
                 print "No such nosql available"
                 return
 
-            else:
+            for nosql_obj in config.nosql_ips:
+                nosql_ip = nosql_obj[0]
+                nosql_user = nosql_obj[1]
+
                 if nosql == 'cassandra':
-                    deploy_cassandra(user, host)
+                    deploy_cassandra(nosql_user, nosql_ip)
                 if nosql == 'mongodb':
-                    deploy_mongodb(user, host)
+                    deploy_mongodb(nosql_user, nosql_ip)
                 if nosql == 'riak':
-                    deploy_riak(user, host)
+                    deploy_riak(nosql_user, nosql_ip)
                 if nosql == 'redis':
-                    deploy_redis(user, host)
+                    deploy_redis(nosql_user, nosql_ip)
                 if nosql == 'bigcouch':
-                    deploy_bigcouch(user, host)
+                    deploy_bigcouch(nosql_user, nosql_ip)
                 if nosql == 'hbase':
-                    deploy_hbase(user, host)
+                    deploy_hbase(nosql_user, nosql_ip)
         except Exception as e:
             print e
 
@@ -123,9 +121,11 @@ class Zelush(cmd.Cmd):
 
             for i in range(0, len(config.stormtrooper_ips)):
                 storm_ip = config.stormtrooper_ips[i][0]
+                storm_user = config.stormtrooper_ips[i][1]
 
-                for worker in range(0, config.stormtrooper_numbers[storm_ip]):
-                    p = populate_read((nosql, i, worker, int(amount)))
+                for j in range(0, config.stormtrooper_numbers[storm_ip]):
+                    c = Stormtrooper(storm_user, storm_ip, i, j)
+                    p = populate_read((nosql, c, int(amount)))
                     process_list.append(p)
             
             for p in process_list:
@@ -151,9 +151,11 @@ class Zelush(cmd.Cmd):
 
             for i in range(0, len(config.stormtrooper_ips)):
                 storm_ip = config.stormtrooper_ips[i][0]
+                storm_user = config.stormtrooper_ips[i][1]
 
-                for worker in range(0, config.stormtrooper_numbers[storm_ip]):
-                    p = populate_write((i, worker, int(amount), int(granularity)))
+                for j in range(0, config.stormtrooper_numbers[storm_ip]):
+                    c = Stormtrooper(storm_user, storm_ip, i, j)
+                    p = populate_write((c, int(amount), int(granularity)))
                     process_list.append(p)
 
             for p in process_list:
@@ -171,9 +173,11 @@ class Zelush(cmd.Cmd):
 
             for i in range(0, len(config.stormtrooper_ips)):
                 storm_ip = config.stormtrooper_ips[i][0]
+                storm_user = config.stormtrooper_ips[i][1]
 
-                for worker in range(0, config.stormtrooper_numbers[storm_ip]):
-                    p = populate_update((nosql, i, worker, int(amount), int(granularity)))
+                for j in range(0, config.stormtrooper_numbers[storm_ip]):
+                    c = Stormtrooper(storm_user, storm_ip, i, j)
+                    p = populate_update((nosql, c, int(amount), int(granularity)))
                     process_list.append(p)
 
             for p in process_list:
