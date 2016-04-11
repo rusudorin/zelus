@@ -17,13 +17,13 @@ def ping_all():
             c.ping()
 
     for ip in config.nosql_ips:
-        r = Rebel(ip)
+        r = Rebel(ip, config.nosql_ips[ip])
         r.ping()
 
 
 def start_all_consumers():
     for ip in config.nosql_ips:
-        r = Rebel(ip)
+        r = Rebel(ip, config.nosql_ips[ip])
         r.start_monitoring()
 
     for i in range(0, len(config.stormtrooper_ips)):
@@ -43,7 +43,7 @@ def stop_all_consumers():
             c.stop_consuming()
 
     for ip in config.nosql_ips:
-        r = Rebel(ip)
+        r = Rebel(ip, config.nosql_ips[ip])
         r.stop_monitoring()
 
 
@@ -56,7 +56,7 @@ def gather_all_reports():
             c.gather_report()
 
     for ip in config.nosql_ips:
-        r = Rebel(ip)
+        r = Rebel(ip, config.nosql_ips[ip])
         r.gather_report()
 
 
@@ -69,7 +69,7 @@ def clear_all_reports():
             c.clear_report()
 
     for ip in config.nosql_ips:
-        r = Rebel(ip)
+        r = Rebel(ip, config.nosql_ips[ip])
         r.clear_report()
 
 

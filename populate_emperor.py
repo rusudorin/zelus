@@ -18,14 +18,12 @@ class UpdateTask(celery.Task):
 
 
 # populate a queue with read tasks
-def populate_queue_read(nosql, stormtrooper_id, worker_id, amount):
-    # set the queue name
-    queue_name = "worker%d_%d" % (stormtrooper_id, worker_id)
-
-    print "Populating %s..." % queue_name
+def populate_queue_read(nosql, stormtrooper, amount):
+    print "Populating {0}...".format(stormtrooper.queue_name)
 
     # get the corresponding nosql handler
-    handler = get_nosql_handler(nosql, [config.mongo_primary_ip])
+    nosql_list = [x for x in config.nosql_ips]
+    handler = get_nosql_handler(nosql, nosql_list)
 
     # get all the unique timestamps (ids)
     timestamp_list = handler.get_timestamp_list()
@@ -40,57 +38,44 @@ def populate_queue_read(nosql, stormtrooper_id, worker_id, amount):
         index = randint(0, len(timestamp_list) - 1)
         generated_timestamp_list.append(timestamp_list[index-1])
 
-    # get the consumer_ip
-    node_ip = config.stormtrooper_ips[stormtrooper_id]
-    emperor_ip = get_emperor_ip(node_ip)
-
     read_nosql = ReadTask()
-    app = celery.Celery('tasks', broker="amqp://%s:%s@%s/%s" %
-                                        (config.rabbit_user, config.rabbit_pass, emperor_ip, config.rabbit_vhost))
+    app = get_celery(stormtrooper.emperor_ip)
     read_nosql.bind(app)
 
     for i in range(0, len(generated_timestamp_list)):
-        read_nosql.apply_async(args=[generated_timestamp_list[i]], queue=queue_name)
-    print "Finished populating %s" % queue_name
+        read_nosql.apply_async(args=[generated_timestamp_list[i]], queue=stormtrooper.queue_name)
+    print "Finished populating {0}".format(stormtrooper.queue_name)
 
 
 # populate a queue with write tasks
-def populate_queue_write(stormtrooper_id, worker_id, amount, granularity):
-    queue_name = "worker%d_%d" % (stormtrooper_id, worker_id)
-    print "Populating %s..." % queue_name
-
-    node_ip = config.stormtrooper_ips[stormtrooper_id]
-    emperor_ip = get_emperor_ip(node_ip)
+def populate_queue_write(stormtrooper, amount, granularity):
+    print "Populating %s..." % stormtrooper.queue_name
 
     write_nosql = WriteTask()
-    app = celery.Celery('tasks', broker="amqp://%s:%s@%s/%s" %
-                                        (config.rabbit_user, config.rabbit_pass, emperor_ip, config.rabbit_vhost))
+    app = get_celery(stormtrooper.emperor_ip)
     write_nosql.bind(app)
 
     for i in range(0, amount):
-        write_nosql.apply_async(args=[granularity], queue=queue_name)
+        write_nosql.apply_async(args=[granularity], queue=stormtrooper.queue_name)
 
-    print "Finished populating %s" % queue_name
+    print "Finished populating %s" % stormtrooper.queue_name
 
 
 # populate a queue with write tasks
-def populate_queue_mix(nosql, stormtrooper_id, worker_id, amount, granularity, percent):
-    queue_name = "worker%d_%d" % (stormtrooper_id, worker_id)
-    print "Populating %s..." % queue_name
+def populate_queue_mix(nosql, stormtrooper, amount, granularity, percent):
+    print "Populating %s..." % stormtrooper.queue_name
 
-    handler = get_nosql_handler(nosql, [config.mongo_primary_ip])
+    # get the corresponding nosql handler
+    nosql_list = [x for x in config.nosql_ips]
+    handler = get_nosql_handler(nosql, nosql_list)
 
     generated_timestamp_list = []
     timestamp_list = handler.get_timestamp_list()
     elements = ['read', 'write']
 
-    node_ip = config.stormtrooper_ips[stormtrooper_id]
-    emperor_ip = get_emperor_ip(node_ip)
-
     write_nosql = WriteTask()
     read_nosql = ReadTask()
-    app = celery.Celery('tasks', broker="amqp://%s:%s@%s/%s" %
-                                        (config.rabbit_user, config.rabbit_pass, emperor_ip, config.rabbit_vhost))
+    app = get_celery(stormtrooper.emperor_ip)
     write_nosql.bind(app)
     read_nosql.bind(app)
 
@@ -98,47 +83,39 @@ def populate_queue_mix(nosql, stormtrooper_id, worker_id, amount, granularity, p
         ch = choice(elements, p=[percent, 1-percent])
         if ch == 'read':
             index = randint(0, len(timestamp_list) - 1)
-            read_nosql.apply_async(args=[generated_timestamp_list[index]], queue=queue_name)
+            read_nosql.apply_async(args=[generated_timestamp_list[index]], queue=stormtrooper.queue_name)
         else:
-            write_nosql.apply_async(args=[granularity], queue=queue_name)
+            write_nosql.apply_async(args=[granularity], queue=stormtrooper.queue_name)
 
-    print "Finished populating %s" % queue_name
+    print "Finished populating %s" % stormtrooper.queue_name
 
 
 # populate a queue with update tasks
-def populate_queue_update(nosql, stormtrooper_id, worker_id, amount, granularity, varying=False):
-    queue_name = "worker%d_%d" % (stormtrooper_id, worker_id)
-    print "Populating %s..." % queue_name
-    handler = get_nosql_handler(nosql, [config.mongo_primary_ip])
+def populate_queue_update(nosql, stormtrooper, amount, granularity):
+    print "Populating %s..." % stormtrooper.queue_name
+
+    # get the corresponding nosql handler
+    nosql_list = [x for x in config.nosql_ips]
+    handler = get_nosql_handler(nosql, nosql_list)
 
     timestamp_list = handler.get_timestamp_list()
 
-    node_ip = config.stormtrooper_ips[stormtrooper_id]
-    emperor_ip = get_emperor_ip(node_ip)
-
     update_nosql = UpdateTask()
-    app = celery.Celery('tasks', broker="amqp://%s:%s@%s/%s" %
-                                        (config.rabbit_user, config.rabbit_pass, emperor_ip, config.rabbit_vhost))
+    app = get_celery(stormtrooper.emperor_ip)
     update_nosql.bind(app)
 
     for i in range(0, amount):
         index = randint(0, len(timestamp_list) - 1)
 
-        if varying:
-            write_size = randint(0, granularity)
-        else:
-            write_size = granularity
+        update_nosql.apply_async(args=[timestamp_list[index], granularity], queue=stormtrooper.queue_name)
 
-        update_nosql.apply_async(args=[timestamp_list[index], write_size], queue=queue_name)
-
-    print "Finished populating %s" % queue_name
+    print "Finished populating %s" % stormtrooper.queue_name
 
 
-def get_emperor_ip(node_ip):
-
-    for key in config.stormtrooper_emperors:
-        if node_ip in config.stormtrooper_emperors[key]:
-            return key
+def get_celery(emperor_ip):
+    app = celery.Celery('tasks', broker="amqp://{0}:{1}@{2}/{3}".
+                        format(config.rabbit_user, config.rabbit_pass, emperor_ip, config.rabbit_vhost))
+    return app
 
 
 # a multiprocess implementation of the queue population with read tasks
