@@ -1,4 +1,5 @@
-from zelus.consumer import Consumer
+from zelus.stormtrooper import Stormtrooper
+from zelus.rebel import Rebel
 import config
 import datetime
 import json
@@ -8,69 +9,63 @@ import matplotlib.pyplot as plt
 
 
 def ping_all():
-    for i in range(0, len(config.consumer_ips)):
-        for worker in range(0, config.worker_numbers[config.consumer_ips[i]]):
-            c = Consumer('root', config.consumer_ips[i], i, worker)
-            print "\nPinging worker{0}_{1}...".format(i, worker)
+    for i in range(0, len(config.stormtrooper_ips)):
+        storm_ip = config.stormtrooper_ips[i]
+        for trooper in range(0, config.stormtrooper_numbers[storm_ip]):
+            c = Stormtrooper('root', storm_ip, i, trooper)
             c.ping()
+
     for i in range(0, len(config.nosql_ips)):
-        os.system("ssh {0}@{1} 'supervisorctl status cpu_usage'".format('root', config.nosql_ips[i]))
-        os.system("ssh {0}@{1} 'supervisorctl status cpu_load'".format('root', config.nosql_ips[i]))
-        # TODO move users to config
+        r = Rebel(config.nosql_ips[i])
+        r.ping()
 
 
 def start_all_consumers():
     for i in range(0, len(config.nosql_ips)):
-        print "Starting nosql %s" % config.nosql_ips[i]
-        os.system("ssh {0}@{1} 'supervisorctl start cpu_usage'".format('root', config.nosql_ips[i]))
-        os.system("ssh {0}@{1} 'supervisorctl start cpu_load'".format('root', config.nosql_ips[i]))
-        # TODO move users to config
+        r = Rebel(config.nosql_ips[i])
+        r.start_monitoring()
 
-    for i in range(0, len(config.consumer_ips)):
-        for worker in range(0, config.worker_numbers[config.consumer_ips[i]]):
-            c = Consumer('root', config.consumer_ips[i], i, worker)
-            print "Starting worker{0}_{1}...".format(i, worker)
+    for i in range(0, len(config.stormtrooper_ips)):
+        storm_ip = config.stormtrooper_ips[i]
+        for trooper in range(0, config.stormtrooper_numbers[storm_ip]):
+            c = Stormtrooper('root', storm_ip, i, trooper)
             c.start_consuming()
 
 
 def stop_all_consumers():
-    for i in range(0, len(config.consumer_ips)):
-        for worker in range(0, config.worker_numbers[config.consumer_ips[i]]):
-            c = Consumer('root', config.consumer_ips[i], i, worker)
-            print "Stopping worker{0}_{1}...".format(i, worker)
+    for i in range(0, len(config.stormtrooper_ips)):
+        storm_ip = config.stormtrooper_ips[i]
+        for trooper in range(0, config.stormtrooper_numbers[storm_ip]):
+            c = Stormtrooper('root', storm_ip, i, trooper)
             c.stop_consuming()
+
     for i in range(0, len(config.nosql_ips)):
-        print "Stopping nosql {0}".format(config.nosql_ips[i])
-        os.system("ssh {0}@{1} 'supervisorctl stop cpu_usage'".format('root', config.nosql_ips[i]))
-        os.system("ssh {0}@{1} 'supervisorctl stop cpu_load'".format('root', config.nosql_ips[i]))
-        # TODO move users to config
+        r = Rebel(config.nosql_ips[i])
+        r.stop_monitoring()
 
 
 def gather_all_reports():
-    for i in range(0, len(config.consumer_ips)):
-        for worker in range(0, config.worker_numbers[config.consumer_ips[i]]):
-            c = Consumer('root', config.consumer_ips[i], i, worker)
+    for i in range(0, len(config.stormtrooper_ips)):
+        storm_ip = config.stormtrooper_ips[i]
+        for trooper in range(0, config.stormtrooper_numbers[storm_ip]):
+            c = Stormtrooper('root', storm_ip, i, trooper)
             c.gather_report()
 
     for i in range(0, len(config.nosql_ips)):
-        print "Gathering report from {0}".format(config.nosql_ips[i])
-        os.system("scp {0}@{1}:/var/log/supervisor/cpu_usage.out cpu_usage_nosql{1}.out".
-                  format('root', config.nosql_ips[i]))
-        os.system("scp {0}@{1}:/var/log/supervisor/cpu_load.out cpu_load_nosql{1}.out".
-                  format('root', config.nosql_ips[i]))
-        # TODO move users to config
+        r = Rebel(config.nosql_ips[i])
+        r.gather_report()
 
 
 def clear_all_reports():
-    for i in range(0, len(config.consumer_ips)):
-        for worker in range(0, config.worker_numbers[config.consumer_ips[i]]):
-            c = Consumer('root', config.consumer_ips[i], i, worker)
+    for i in range(0, len(config.stormtrooper_ips)):
+        storm_ip = config.stormtrooper_ips[i]
+        for trooper in range(0, config.stormtrooper_numbers[storm_ip]):
+            c = Stormtrooper('root', storm_ip, i, trooper)
             c.clear_report()
+
     for i in range(0, len(config.nosql_ips)):
-        print "Clearing report from {0}".format(config.nosql_ips[i])
-        os.system("ssh {0}@{1} 'rm /var/log/supervisor/cpu_usage.out'".format('root', config.nosql_ips[i]))
-        os.system("ssh {0}@{1} 'rm /var/log/supervisor/cpu_load.out'".format('root', config.nosql_ips[i]))
-        # TODO move users to config
+        r = Rebel(config.nosql_ips[i])
+        r.clear_report()
 
 
 def show_report():
@@ -78,21 +73,21 @@ def show_report():
     today = datetime.datetime.now()
 
     # iterate in all files
-    for i in range(0, len(config.consumer_ips)):
+    for i in range(0, len(config.stormtrooper_ips)):
 
-        for worker in range(0, config.worker_numbers[config.consumer_ips[i]]):
+        for trooper in range(0, config.stormtrooper_numbers[config.stormtrooper_ips[i]]):
 
             # in case there is one missing, skip
-            if not os.path.isfile("report_worker{0}_{1}.out".format(i, worker)):
+            if not os.path.isfile("report_worker{0}_{1}.out".format(i, trooper)):
                 continue
 
-            # if there is a json dump created, then skip this worker
-            if os.path.isfile("report_worker{0}_{1}.json".format(i, worker)):
+            # if there is a json dump created, then skip this stormtrooper
+            if os.path.isfile("report_worker{0}_{1}.json".format(i, trooper)):
                 continue
 
             # otherwise parse the file and create a dictionary which will be dumped in a new file
             timestamp_list = []
-            with open("report_worker{0}_{1}.out".format(i, worker)) as f:
+            with open("report_worker{0}_{1}.out".format(i, trooper)) as f:
                 # iterate in all lines
                 for line in f:
                     line_split = line.split(' ')
@@ -118,15 +113,15 @@ def show_report():
                         pass
 
             # dump the dictionary in a new file
-            with open("report_worker{0}_{1}.json".format(i, worker), 'w') as f:
+            with open("report_worker{0}_{1}.json".format(i, trooper), 'w') as f:
                 f.write(json.dumps(timestamp_list))
 
     # iterate through all json dumps again and plot the graphs
     plt.figure(1)
     timestamp_dict = {}
-    for i in range(0, len(config.consumer_ips)):
-        for worker in range(0, config.worker_numbers[config.consumer_ips[i]]):
-            with open("report_worker{0}_{1}.json".format(i, worker)) as f:
+    for i in range(0, len(config.stormtrooper_ips)):
+        for trooper in range(0, config.stormtrooper_numbers[config.stormtrooper_ips[i]]):
+            with open("report_worker{0}_{1}.json".format(i, trooper)) as f:
                 plm = f.read()
                 temp_list = json.loads(plm)
 
@@ -145,7 +140,7 @@ def show_report():
                 list_2 = get_median_list(list_2, median_amount)
 
                 plt.plot(list_1, list_2, linestyle="-", linewidth=2.0, marker=None,
-                         label='Worker{0}_{1}'.format(i, worker))
+                         label='Worker{0}_{1}'.format(i, trooper))
     plt.legend(loc="upper right", ncol=2, shadow=True, title="Legend", fancybox=True)
 
     # get all timestamps from the dictionary

@@ -27,8 +27,8 @@ def deploy_stormtrooper(user, host, nosql, worker_name, concurrency, worker_numb
 
     emperor_ip = 0
 
-    for key in config.worker_emperors:
-        if host in config.worker_emperors[key]:
+    for key in config.stormtrooper_emperors:
+        if host in config.stormtrooper_emperors[key]:
             emperor_ip = key
             break
 

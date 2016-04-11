@@ -4,7 +4,7 @@ import os
 import subprocess
 
 
-class Consumer:
+class Stormtrooper:
 
     def __init__(self, user, ip, unique_id, worker_number):
         self.user = user
@@ -14,15 +14,17 @@ class Consumer:
 
     @property
     def emperor_ip(self):
-        for key in config.worker_emperors:
-            if self.ip in config.worker_emperors[key]:
+        for key in config.stormtrooper_emperors:
+            if self.ip in config.stormtrooper_emperors[key]:
                 return key
 
     @property
     def queue_name(self):
-        return "worker{0}_{1}".format(self.unique_id, self.worker_number)
+        return "stormtrooper{0}_{1}".format(self.unique_id, self.worker_number)
 
     def start_consuming(self, rate=None, task=None):
+        print "Starting stormtrooper{0}_{1}...".format(self.unique_id, self.worker_number)
+
         os.system("ssh {0}@{1} 'supervisorctl start stream_analysis{2}_{3}'".format(self.user, self.ip,
                                                                                     self.unique_id,
                                                                                     self.worker_number))
@@ -35,6 +37,8 @@ class Consumer:
             app.control.broadcast('rate_limit', arguments={'task_name': task, 'rate_limit': '{0}/s'.format(rate)})
 
     def stop_consuming(self):
+        print "Stopping stormtrooper{0}_{1}...".format(self.unique_id, self.worker_number)
+
         os.system("ssh {0}@{1} 'supervisorctl stop stream_analysis{2}_{3}'".format(self.user, self.ip, self.unique_id,
                                                                                    self.worker_number))
 
@@ -43,16 +47,17 @@ class Consumer:
                          stdout=subprocess.PIPE)  # if it looks hacky, thank the official celery page. They provided it
 
     def ping(self):
+        print "\nPinging stormtrooper{0}_{1}...".format(self.unique_id, self.worker_number)
         os.system("ssh {0}@{1} 'supervisorctl status stream_analysis{2}_{3}'".format(self.user, self.ip, self.unique_id,
                                                                                      self.worker_number))
 
     def gather_report(self):
-        print "Gathering report from worker{0}_{1}".format(self.unique_id, self.worker_number)
+        print "Gathering report from stormtrooper{0}_{1}".format(self.unique_id, self.worker_number)
         os.system("scp {0}@{1}:/var/log/supervisor/stream_analysis{2}_{3}.out report_worker{2}_{3}.out".
                   format(self.user, self.ip, self.unique_id, self.worker_number))
 
     def clear_report(self):
-        print "Clearing report from worker{0}_{1}".format(self.unique_id, self.worker_number)
+        print "Clearing report from stormtrooper{0}_{1}".format(self.unique_id, self.worker_number)
         os.system("ssh {0}@{1} 'rm /var/log/supervisor/stream_analysis{2}_{3}.out'".
                   format(self.user, self.ip, self.unique_id, self.worker_number))
         os.system("ssh {0}@{1} 'rm /var/log/supervisor/stream_analysis{2}_{3}.err'".
