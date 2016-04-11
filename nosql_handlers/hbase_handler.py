@@ -52,7 +52,6 @@ class HBaseHandler(NoSQLHandler):
         except Exception as e:
             print e
             inserted_id = False
-        print inserted_id
         return inserted_id
 
     def perform_update(self, timestamp, granularity):

@@ -1,5 +1,4 @@
 from redis import StrictRedis
-import const
 import time
 import data_gen
 from nosql_handler import NoSQLHandler
@@ -19,7 +18,6 @@ class RedisHandler(NoSQLHandler):
         """
         establish a session
         """
-        # return cluster[const.keyspace_name][const.table_name]
         return cluster
 
     def connect_cluster(self, ip_list):

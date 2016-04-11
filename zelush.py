@@ -15,7 +15,7 @@ class Zelush(cmd.Cmd):
     # nosql deployment
     def do_deploy_nosql(self, line):
         """Deploys a nosql datastore
-        deploy_nosql [nosql] [user] [host]"""
+        deploy_nosql [nosql]"""
         try:
             nosql, user, host = line.split(' ')
 
@@ -51,14 +51,18 @@ class Zelush(cmd.Cmd):
         return completions
 
     # emperor deployment
-    def do_deploy_emperor(self, line):
-        """Deploys an emperor node
-        deploy_emperor [user] [host] """
-        try:
-            user, host = line.split(" ")
-            deploy_emperor(user, host)
-        except Exception as e:
-            print e
+    def do_deploy_emperor(self, line=None):
+        """Deploys the emperor nodes"""
+        process_list = []
+
+        for emperor_obj in config.emperor_ips:
+            # emperor_obj is a list [ip, user]
+            p = deploy_emperor((emperor_obj[1], emperor_obj[0]))
+
+            process_list.append(p)
+
+        for p in process_list:
+            p.join()
 
     # stormtrooper deployment
     def do_deploy_stormtrooper(self, nosql=None):
@@ -72,8 +76,11 @@ class Zelush(cmd.Cmd):
             process_list = []
 
             for i in range(0, len(config.stormtrooper_ips)):
-                p = stormtrooper(('root', config.stormtrooper_ips[i], nosql, i,
-                                  config.concurrency, config.stormtrooper_numbers[config.stormtrooper_ips[i]]))
+                storm_ip = config.stormtrooper_ips[i][0]
+                storm_user = config.stormtrooper_ips[i][1]
+
+                p = stormtrooper((storm_user, storm_ip, nosql, i, config.concurrency,
+                                  config.stormtrooper_numbers[storm_ip]))
                 process_list.append(p)
 
             for p in process_list:
@@ -115,7 +122,9 @@ class Zelush(cmd.Cmd):
             process_list = []
 
             for i in range(0, len(config.stormtrooper_ips)):
-                for worker in range(0, config.stormtrooper_numbers[config.stormtrooper_ips[i]]):
+                storm_ip = config.stormtrooper_ips[i][0]
+
+                for worker in range(0, config.stormtrooper_numbers[storm_ip]):
                     p = populate_read((nosql, i, worker, int(amount)))
                     process_list.append(p)
             
@@ -141,7 +150,9 @@ class Zelush(cmd.Cmd):
             process_list = []
 
             for i in range(0, len(config.stormtrooper_ips)):
-                for worker in range(0, config.stormtrooper_numbers[config.stormtrooper_ips[i]]):
+                storm_ip = config.stormtrooper_ips[i][0]
+
+                for worker in range(0, config.stormtrooper_numbers[storm_ip]):
                     p = populate_write((i, worker, int(amount), int(granularity)))
                     process_list.append(p)
 
@@ -159,7 +170,9 @@ class Zelush(cmd.Cmd):
             process_list = []
 
             for i in range(0, len(config.stormtrooper_ips)):
-                for worker in range(0, config.stormtrooper_numbers[config.stormtrooper_ips[i]]):
+                storm_ip = config.stormtrooper_ips[i][0]
+
+                for worker in range(0, config.stormtrooper_numbers[storm_ip]):
                     p = populate_update((nosql, i, worker, int(amount), int(granularity)))
                     process_list.append(p)
 

@@ -1,16 +1,6 @@
 import const
 import config
-import subprocess
 import sys
-
-
-def get_rand_string(granularity):
-    """
-    get a random string
-    """
-
-    script_cmd = "python data_gen.py --size %d " % granularity
-    return subprocess.check_output(script_cmd, shell=True).strip()
 
 
 def get_environment(nosql):
@@ -50,8 +40,10 @@ def do_populate(nosql, granularity, total_size):
 
     handler = get_environment(nosql)
 
-    # get the session
-    nosql = handler(config.nosql_ips)
+    # get the session from any nosql ip
+    for ip in config.nosql_ips:
+        nosql = handler(ip)
+        break
 
     print "Populating rebels"
     i = 1

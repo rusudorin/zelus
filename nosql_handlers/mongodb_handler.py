@@ -1,5 +1,4 @@
 from pymongo import MongoClient
-import subprocess
 import const
 import time
 import data_gen
