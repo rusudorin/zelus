@@ -19,6 +19,14 @@ def copy_deployment(deployment, user, host, arguments=''):
               (arguments, get_current_folder(), deployment, user, host, root_folder, user))
 
 
+# copies extra files to puppet folder on the new machine
+def copy_extras(handler, user, host, arguments=''):
+    os.system("scp %s %s/../nosql_handlers/%s.py %s@%s:%s/%s/stormtrooper/modules/stormtrooper/files/" %
+              (arguments, get_current_folder(), handler, user, host, root_folder, user))
+    os.system("scp %s %s/../nosql_handlers/nosql_handler.py %s@%s:%s/%s/stormtrooper/modules/stormtrooper/files/" %
+              (arguments, get_current_folder(), user, host, root_folder, user))
+
+
 # prepares and copies the templating file
 def prepare_template(deployment, user, host, substitution_dict, arguments=''):
     if deployment not in deployment_options:
@@ -43,7 +51,7 @@ def prepare_template(deployment, user, host, substitution_dict, arguments=''):
 
 
 # initiates the installation of a deployment on a new machine
-def install_deployment(deployment, user, host, substitution_dict, arguments=''):
+def install_deployment(deployment, user, host, arguments=''):
     if deployment not in deployment_options:
         return 'Not a deployment'
 
@@ -58,5 +66,7 @@ def install_deployment(deployment, user, host, substitution_dict, arguments=''):
 # sets up deployment
 def deploy(deployment, user, host, substitution_dict, arguments=''):
     copy_deployment(deployment, user, host)
+    if deployment == 'stormtrooper':
+        copy_extras(substitution_dict['templ_handler_name'], user, host)
     prepare_template(deployment, user, host, substitution_dict)
-    install_deployment(deployment, user, host, substitution_dict)
+    install_deployment(deployment, user, host)
