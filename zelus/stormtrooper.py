@@ -53,7 +53,7 @@ class Stormtrooper:
 
     def gather_report(self):
         print "Gathering report from stormtrooper{0}_{1}".format(self.unique_id, self.worker_number)
-        os.system("scp {0}@{1}:/var/log/supervisor/stream_analysis{2}_{3}.out report_worker{2}_{3}.out".
+        os.system("scp {0}@{1}:/var/log/supervisor/stream_analysis{2}_{3}.out report_stormtrooper{2}_{3}.out".
                   format(self.user, self.ip, self.unique_id, self.worker_number))
 
     def clear_report(self):

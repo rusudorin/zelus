@@ -11,6 +11,12 @@ def stormtrooper(lots_of_args):
     return p
 
 
+def emperor(lots_of_args):
+    p = Process(target=deploy_emperor, args=lots_of_args)
+    p.start()
+    return p
+
+
 # launch an emperor node
 def deploy_emperor(user, host):
     d = {

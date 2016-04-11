@@ -19,10 +19,7 @@ class BigCouchHandler(NoSQLHandler):
         """
         establish a session
         """
-        # try:
         db = cluster.get_or_create_db(const.keyspace_name)
-        # except:
-        #     db = cluster.database(const.keyspace_name)
         return db
 
     def connect_cluster(self, ip_list):
@@ -52,7 +49,6 @@ class BigCouchHandler(NoSQLHandler):
         except Exception as e:
             inserted_id = False
             print e
-        # print inserted_id
         return inserted_id
 
     def perform_update(self, timestamp, granularity):

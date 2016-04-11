@@ -15,8 +15,8 @@ def copy_deployment(deployment, user, host, arguments=''):
     if deployment not in deployment_options:
         return 'Not a deployment'
 
-    os.system("scp %s -r %s/%s %s@%s:%s%s" %
-              (arguments, get_current_folder(), deployment, user, host, root_folder, user))
+    os.system("scp {0} -r {1}/{2} {3}@{4}:{5}{3}".
+              format(arguments, get_current_folder(), deployment, user, host, root_folder))
 
 
 # prepares and copies the templating file
@@ -24,7 +24,7 @@ def prepare_template(deployment, user, host, substitution_dict, arguments=''):
     if deployment not in deployment_options:
         return 'Not a deployment'
 
-    filein = open("%s/templating/apply_template.temp" % get_current_folder())
+    filein = open("{0}/templating/apply_template.temp".format(get_current_folder()))
     src = Template(filein.read())
 
     d = {
@@ -33,13 +33,13 @@ def prepare_template(deployment, user, host, substitution_dict, arguments=''):
     }
     result = src.safe_substitute(d)
 
-    fileout = open("%s/templating/apply_template_%s.py" % (get_current_folder(), host), 'w')
+    fileout = open("{0}/templating/apply_template_{1}.py".format(get_current_folder(), host), 'w')
     fileout.write(result)
     fileout.close()
 
-    os.system("scp %s %s/templating/apply_template_%s.py %s@%s:%s%s/%s/apply_template.py" %
-              (arguments, get_current_folder(), host, user, host, root_folder, user, deployment))
-    os.remove("%s/templating/apply_template_%s.py" % (get_current_folder(), host))
+    os.system("scp {0} {1}/templating/apply_template_{2}.py {3}@{2}:{4}{3}/{5}/apply_template.py".
+              format(arguments, get_current_folder(), host, user, root_folder, deployment))
+    os.remove("{0}/templating/apply_template_{1}.py".format(get_current_folder(), host))
 
 
 # initiates the installation of a deployment on a new machine
@@ -47,13 +47,13 @@ def install_deployment(deployment, user, host, arguments=''):
     if deployment not in deployment_options:
         return 'Not a deployment'
 
-    change_dir = "cd %s%s/%s" % (root_folder, user, deployment)
+    change_dir = "cd {0}{1}/{2}".format(root_folder, user, deployment)
     apply_template = 'python apply_template.py'
-    install_location = "sh %s%s/%s/install.sh" % (root_folder, user, deployment)
+    install_location = "sh {0}{1}/{2}/install.sh".format(root_folder, user, deployment)
 
     action = change_dir + ';' + apply_template + ';' + install_location
 
-    os.system("ssh %s %s@%s '%s'" % (arguments, user, host, action))
+    os.system("ssh {0} {1}@{2} '{3}'".format(arguments, user, host, action))
 
 
 # sets up deployment
@@ -61,4 +61,3 @@ def deploy(deployment, user, host, substitution_dict, arguments=''):
     copy_deployment(deployment, user, host)
     prepare_template(deployment, user, host, substitution_dict)
     install_deployment(deployment, user, host)
-
