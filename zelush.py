@@ -22,9 +22,8 @@ class Zelush(cmd.Cmd):
                 print "No such nosql available"
                 return
 
-            for nosql_obj in config.nosql_ips:
-                nosql_ip = nosql_obj[0]
-                nosql_user = nosql_obj[1]
+            for nosql_ip in config.nosql_ips:
+                nosql_user = config.nosql_ips[nosql_ip]
 
                 if nosql == 'cassandra':
                     deploy_cassandra(nosql_user, nosql_ip)
@@ -55,7 +54,7 @@ class Zelush(cmd.Cmd):
 
         for emperor_obj in config.emperor_ips:
             # emperor_obj is a list [ip, user]
-            p = deploy_emperor((emperor_obj[1], emperor_obj[0]))
+            p = emperor((emperor_obj[1], emperor_obj[0]))
 
             process_list.append(p)
 
@@ -186,6 +185,40 @@ class Zelush(cmd.Cmd):
             print e
 
     def complete_populate_update(self, text, line, begidx, endidx):
+        if not text:
+            completions = const.nosql_list
+        else:
+            completions = [f for f in const.nosql_list if f.startswith(text)]
+        return completions
+
+    # populate emperor with mixed tasks for all stormtroopers
+    def do_populate_mix(self, line):
+        """Populate emperor with mixed tasks for all stormtroopers
+        populate_update [nosql] [percentage 0.0 -> 1.0] [amount] [granularity]"""
+        try:
+            nosql, percentage, amount, granularity = line.split(" ")
+
+            percentage = float(percentage)
+            if percentage < 0.0 or percentage > 1.0:
+                raise Exception('Percentage must be a float between 0.0 and 1.0')
+
+            process_list = []
+
+            for i in range(0, len(config.stormtrooper_ips)):
+                storm_ip = config.stormtrooper_ips[i][0]
+                storm_user = config.stormtrooper_ips[i][1]
+
+                for j in range(0, config.stormtrooper_numbers[storm_ip]):
+                    c = Stormtrooper(storm_user, storm_ip, i, j)
+                    p = populate_update((nosql, c, int(amount), int(granularity)))
+                    process_list.append(p)
+
+            for p in process_list:
+                p.join()
+        except Exception as e:
+            print e
+
+    def complete_populate_mix(self, text, line, begidx, endidx):
         if not text:
             completions = const.nosql_list
         else:

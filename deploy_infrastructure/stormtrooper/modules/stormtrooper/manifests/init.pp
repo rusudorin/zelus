@@ -13,7 +13,7 @@ class stormtrooper{
   $extra_pip_packages = '$templ_extra_pip_packages'
   $extra_apt_packages = '$templ_extra_apt_packages'
   $worker_id = $templ_worker_name
-  $worker_name = worker$templ_worker_name
+  $worker_name = stormtrooper$templ_worker_name
   $worker_number = $templ_worker_number
   $concurrency = '$templ_concurrency'
   $current_ip = '$templ_current_ip'

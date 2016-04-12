@@ -25,7 +25,7 @@ def copy_extras(handler, user, host, arguments=''):
               format(arguments, get_current_folder(), handler, user, host, root_folder))
     os.system("scp {0} {1}/../nosql_handlers/nosql_handler.py {2}@{3}:{4}/{2}/stormtrooper/modules/stormtrooper/files/".
               format(arguments, get_current_folder(), user, host, root_folder))
-    os.system("scp {0} {1}/../data_gen.py [2}@{3}:{4}/{2}/stormtrooper/modules/stormtrooper/files/".
+    os.system("scp {0} {1}/../data_gen.py {2}@{3}:{4}/{2}/stormtrooper/modules/stormtrooper/files/".
               format(arguments, get_current_folder(), user, host, root_folder))
     os.system("scp {0} {1}/../const.py {2}@{3}:{4}/{2}/stormtrooper/modules/stormtrooper/files/".
               format(arguments, get_current_folder(), user, host, root_folder))

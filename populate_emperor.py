@@ -1,8 +1,8 @@
 from random import randint
 from multiprocessing import Process
 from numpy.random import choice
-import config
 import celery
+import config
 
 
 class ReadTask(celery.Task):
