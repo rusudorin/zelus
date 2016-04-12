@@ -1,7 +1,7 @@
 from deploy import *
 from consumer_control import start_all_consumers, stop_all_consumers, gather_all_reports, clear_all_reports, \
     ping_all, show_report
-from populate_emperor import populate_read, populate_write, populate_update
+from populate_emperor import populate_read, populate_write, populate_update, populate_mix
 from populate_rebels import do_populate
 from zelus.stormtrooper import Stormtrooper
 import cmd
@@ -194,7 +194,7 @@ class Zelush(cmd.Cmd):
     # populate emperor with mixed tasks for all stormtroopers
     def do_populate_mix(self, line):
         """Populate emperor with mixed tasks for all stormtroopers
-        populate_update [nosql] [percentage 0.0 -> 1.0] [amount] [granularity]"""
+        populate_mix [nosql] [percentage 0.0 -> 1.0] [amount] [granularity]"""
         try:
             nosql, percentage, amount, granularity = line.split(" ")
 
@@ -210,7 +210,7 @@ class Zelush(cmd.Cmd):
 
                 for j in range(0, config.stormtrooper_numbers[storm_ip]):
                     c = Stormtrooper(storm_user, storm_ip, i, j)
-                    p = populate_update((nosql, c, int(amount), int(granularity)))
+                    p = populate_mix((nosql, c, percentage, int(amount), int(granularity)))
                     process_list.append(p)
 
             for p in process_list:

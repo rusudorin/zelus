@@ -49,7 +49,7 @@ def populate_queue_read(nosql, stormtrooper, amount):
 
 # populate a queue with write tasks
 def populate_queue_write(stormtrooper, amount, granularity):
-    print "Populating %s..." % stormtrooper.queue_name
+    print "Populating {0}...".format(stormtrooper.queue_name)
 
     write_nosql = WriteTask()
     app = get_celery(stormtrooper.emperor_ip)
@@ -58,18 +58,17 @@ def populate_queue_write(stormtrooper, amount, granularity):
     for i in range(0, amount):
         write_nosql.apply_async(args=[granularity], queue=stormtrooper.queue_name)
 
-    print "Finished populating %s" % stormtrooper.queue_name
+    print "Finished populating {0}".format(stormtrooper.queue_name)
 
 
 # populate a queue with write tasks
-def populate_queue_mix(nosql, stormtrooper, amount, granularity, percent):
-    print "Populating %s..." % stormtrooper.queue_name
+def populate_queue_mix(nosql, stormtrooper, percent, amount, granularity):
+    print "Populating {0}...".format(stormtrooper.queue_name)
 
     # get the corresponding nosql handler
     nosql_list = [x for x in config.nosql_ips]
     handler = get_nosql_handler(nosql, nosql_list)
 
-    generated_timestamp_list = []
     timestamp_list = handler.get_timestamp_list()
     elements = ['read', 'write']
 
@@ -83,16 +82,16 @@ def populate_queue_mix(nosql, stormtrooper, amount, granularity, percent):
         ch = choice(elements, p=[percent, 1-percent])
         if ch == 'read':
             index = randint(0, len(timestamp_list) - 1)
-            read_nosql.apply_async(args=[generated_timestamp_list[index]], queue=stormtrooper.queue_name)
+            read_nosql.apply_async(args=[timestamp_list[index]], queue=stormtrooper.queue_name)
         else:
             write_nosql.apply_async(args=[granularity], queue=stormtrooper.queue_name)
 
-    print "Finished populating %s" % stormtrooper.queue_name
+    print "Finished populating {0}".format(stormtrooper.queue_name)
 
 
 # populate a queue with update tasks
 def populate_queue_update(nosql, stormtrooper, amount, granularity):
-    print "Populating %s..." % stormtrooper.queue_name
+    print "Populating {0}...".format(stormtrooper.queue_name)
 
     # get the corresponding nosql handler
     nosql_list = [x for x in config.nosql_ips]
@@ -109,7 +108,7 @@ def populate_queue_update(nosql, stormtrooper, amount, granularity):
 
         update_nosql.apply_async(args=[timestamp_list[index], granularity], queue=stormtrooper.queue_name)
 
-    print "Finished populating %s" % stormtrooper.queue_name
+    print "Finished populating {0}".format(stormtrooper.queue_name)
 
 
 def get_celery(emperor_ip):
@@ -135,6 +134,13 @@ def populate_write(lots_of_args):
 # a multiprocess implementation of the queue population with update tasks
 def populate_update(lots_of_args):
     p = Process(target=populate_queue_update, args=lots_of_args)
+    p.start()
+    return p
+
+
+# a multiprocess implementation of the queue population with mixed tasks
+def populate_mix(lots_of_args):
+    p = Process(target=populate_queue_mix, args=lots_of_args)
     p.start()
     return p
 
