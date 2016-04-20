@@ -1,5 +1,5 @@
 from deploy import *
-from consumer_control import start_all_consumers, stop_all_consumers, gather_all_reports, clear_all_reports, \
+from consumer_control import start_all_stormtroopers, stop_all_stormtroopers, gather_all_reports, clear_all_reports, \
     ping_all, show_report
 from populate_emperor import populate_read, populate_write, populate_update, populate_mix
 from populate_rebels import do_populate
@@ -12,7 +12,7 @@ import const
 class Zelush(cmd.Cmd):
 
     prompt = 'zelush> '
-    
+
     # nosql deployment
     def do_deploy_nosql(self, nosql):
         """Deploys a nosql datastore
@@ -126,7 +126,7 @@ class Zelush(cmd.Cmd):
                     c = Stormtrooper(storm_user, storm_ip, i, j)
                     p = populate_read((nosql, c, int(amount)))
                     process_list.append(p)
-            
+
             for p in process_list:
                 p.join()
 
@@ -233,12 +233,12 @@ class Zelush(cmd.Cmd):
     # start all consumers
     def do_start_consumers(self, line):
         """Starts all consumers"""
-        start_all_consumers()
+        start_all_stormtroopers()
 
     # stop all consumers
     def do_stop_consumers(self, line):
         """Stop all consumers"""
-        stop_all_consumers()
+        stop_all_stormtroopers()
 
     # gather all reports
     def do_gather_reports(self, line):
@@ -260,6 +260,10 @@ class Zelush(cmd.Cmd):
 
     def do_exit(self, line):
         return True
+
+    # disables reexecuting the last command when entering an empty line
+    def emptyline(self):
+        pass
 
 if __name__ == '__main__':
     Zelush().cmdloop()

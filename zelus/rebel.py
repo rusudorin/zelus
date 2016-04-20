@@ -12,13 +12,13 @@ class Rebel:
         os.system("ssh {0}@{1} 'supervisorctl status cpu_usage'".format(self.user, self.ip))
         os.system("ssh {0}@{1} 'supervisorctl status cpu_load'".format(self.user, self.ip))
 
-    def start_monitoring(self):
+    def start(self):
         print "Starting nosql {0}".format(self.ip)
 
         os.system("ssh {0}@{1} 'supervisorctl start cpu_usage'".format(self.user, self.ip))
         os.system("ssh {0}@{1} 'supervisorctl start cpu_load'".format(self.user, self.ip))
 
-    def stop_monitoring(self):
+    def stop(self):
         print "Stopping nosql {0}".format(self.ip)
 
         os.system("ssh {0}@{1} 'supervisorctl stop cpu_usage'".format(self.user, self.ip))
