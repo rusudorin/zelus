@@ -1,5 +1,6 @@
 from zelus.stormtrooper import Stormtrooper
 from zelus.rebel import Rebel
+from multiprocessing import Process
 import config
 import datetime
 import json
@@ -8,6 +9,7 @@ import time
 import matplotlib.pyplot as plt
 
 
+# pinging
 def ping_all():
     for i in range(0, len(config.stormtrooper_ips)):
         storm_ip = config.stormtrooper_ips[i][0]
@@ -21,30 +23,86 @@ def ping_all():
         r.ping()
 
 
-def start_all_consumers():
+# starting stormtroopers and rebels
+def start_stormtrooper(storm_user, storm_ip, i, j):
+    c = Stormtrooper(storm_user, storm_ip, i, j)
+    c.start()
+
+
+def start_rebel(ip, user):
+    r = Rebel(ip, user)
+    r.start()
+
+
+def multi_start_stormtrooper(lots_of_args):
+    p = Process(target=start_stormtrooper, args=lots_of_args)
+    p.start()
+    return p
+
+
+def multi_start_rebel(lots_of_args):
+    p = Process(target=start_rebel, args=lots_of_args)
+    p.start()
+    return p
+
+
+def start_all_stormtroopers():
+    process_list = []
+
     for ip in config.nosql_ips:
-        r = Rebel(ip, config.nosql_ips[ip])
-        r.start_monitoring()
+        p = multi_start_rebel((ip, config.nosql_ips[ip]))
+        process_list.append(p)
 
     for i in range(0, len(config.stormtrooper_ips)):
         storm_ip = config.stormtrooper_ips[i][0]
         storm_user = config.stormtrooper_ips[i][1]
         for j in range(0, config.stormtrooper_numbers[storm_ip]):
-            c = Stormtrooper(storm_user, storm_ip, i, j)
-            c.start_consuming()
+            p = multi_start_stormtrooper((storm_user, storm_ip, i, j))
+            process_list.append(p)
+
+    for p in process_list:
+        p.join()
 
 
-def stop_all_consumers():
+# stopping stormtroopers and rebels
+def stop_stormtrooper(storm_user, storm_ip, i, j):
+    c = Stormtrooper(storm_user, storm_ip, i, j)
+    c.stop()
+
+
+def stop_rebel(ip, user):
+    r = Rebel(ip, user)
+    r.stop()
+
+
+def multi_stop_stormtrooper(lots_of_args):
+    p = Process(target=stop_stormtrooper, args=lots_of_args)
+    p.start()
+    return p
+
+
+def multi_stop_rebel(lots_of_args):
+    p = Process(target=stop_rebel, args=lots_of_args)
+    p.start()
+    return p
+
+
+def stop_all_stormtroopers():
+    process_list = []
+
     for i in range(0, len(config.stormtrooper_ips)):
         storm_ip = config.stormtrooper_ips[i][0]
         storm_user = config.stormtrooper_ips[i][1]
         for j in range(0, config.stormtrooper_numbers[storm_ip]):
-            c = Stormtrooper(storm_user, storm_ip, i, j)
-            c.stop_consuming()
+            p = multi_stop_stormtrooper((storm_user, storm_ip, i, j))
+            process_list.append(p)
 
     for ip in config.nosql_ips:
-        r = Rebel(ip, config.nosql_ips[ip])
-        r.stop_monitoring()
+        p = multi_stop_rebel((ip, config.nosql_ips[ip]))
+        process_list.append(p)
+
+    for p in process_list:
+        p.join()
 
 
 def gather_all_reports():

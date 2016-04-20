@@ -22,7 +22,7 @@ class Stormtrooper:
     def queue_name(self):
         return "stormtrooper{0}_{1}".format(self.unique_id, self.worker_number)
 
-    def start_consuming(self, rate=None, task=None):
+    def start(self, rate=None, task=None):
         print "Starting stormtrooper{0}_{1}...".format(self.unique_id, self.worker_number)
 
         os.system("ssh {0}@{1} 'supervisorctl start stream_analysis{2}_{3}'".format(self.user, self.ip,
@@ -36,7 +36,7 @@ class Stormtrooper:
 
             app.control.broadcast('rate_limit', arguments={'task_name': task, 'rate_limit': '{0}/s'.format(rate)})
 
-    def stop_consuming(self):
+    def stop(self):
         print "Stopping stormtrooper{0}_{1}...".format(self.unique_id, self.worker_number)
 
         os.system("ssh {0}@{1} 'supervisorctl stop stream_analysis{2}_{3}'".format(self.user, self.ip, self.unique_id,

@@ -10,6 +10,7 @@ app = Celery('tasks', broker='amqp://<%=rabbit_user%>:<%=rabbit_pass%>@<%=rabbit
 proxy = xmlrpclib.ServerProxy("http://<%=user_ip%>:1138/")
 
 nb_tasks = 0
+nb_tasks_total = 0
 first = True
 last_second = 0
 
@@ -28,17 +29,22 @@ try:
         if 'succeeded' in line:
             line_list = line.split(' ')
             nb_tasks += 1
+            nb_tasks_total += 1
             dt = datetime.strptime(line_list[0][1:] + " " + line_list[1][:-1], '%Y-%m-%d %H:%M:%S,%f')
             print line_list[0][1:] + ":" +line_list[1][:-1], line_list[-2][:-2]
 
             if first:
                 first_dt = dt
+                first_dt_total = dt
                 first = False
             diff = dt - first_dt
+            diff_total = dt - first_dt_total
             ratio = nb_tasks/(diff.seconds + 1.0)
+            ratio_total = nb_tasks_total/(diff_total.seconds + 1.0)
 
             if (diff.seconds + 1) % 5 == 0 and  diff.seconds + 1 != last_second:
-                report_ratio(("<%=worker_name%>_<%=worker_nb%>", ratio))
+                nb_tasks = 0
+                report_ratio(("<%=worker_name%>_<%=worker_nb%>", [ratio, ratio_total]))
             last_second = diff.seconds + 1
 
 except KeyboardInterrupt:
