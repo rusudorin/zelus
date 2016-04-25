@@ -6,22 +6,14 @@ class emperor{
   $rabbit_vhost = '$templ_rabbit_vhost'
   $path = ['/usr/bin', '/usr', '/usr/sbin', '/bin', '/sbin']
 
-  exec { 'apt-get_update':
-    command => 'sudo apt-get update  || true',
-    path => $path
-  }
-
-  exec { 'install_dependencies':
-    command => 'sudo apt-get install -y python2.7-dev python-pip rabbitmq-server',
-    path => $path,
-    require => Exec['apt-get_update']
-  }
+  $enhancers = ['python2.7-dev', 'python-pip', 'rabbitmq-server']
+  package{ $enhancers: ensure => 'installed' }
 
   file { "/etc/rabbitmq/rabbitmq-env.conf":
     content => template("emperor/rabbitmq-env.conf.erb"),
     owner => root,
     group => root,
-    require => Exec['install_dependencies'],
+    require => Package[$enhancers],
     notify => Service['rabbitmq-server']
   }
 

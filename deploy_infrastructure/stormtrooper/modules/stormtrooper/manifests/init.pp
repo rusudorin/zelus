@@ -11,7 +11,7 @@ class stormtrooper{
   $handler_name = '$templ_handler_name'
   $handler_class = '$templ_handler_class'
   $extra_pip_packages = '$templ_extra_pip_packages'
-  $extra_apt_packages = '$templ_extra_apt_packages'
+  $extra_apt_packages = $templ_extra_apt_packages
   $worker_id = $templ_worker_name
   $worker_name = stormtrooper$templ_worker_name
   $worker_number = $templ_worker_number
@@ -19,21 +19,14 @@ class stormtrooper{
   $current_ip = '$templ_current_ip'
   $user_ip = '$templ_user_ip'
 
-  exec { 'apt-get_update':
-    command => 'sudo apt-get update  || true',
-    path => $path
-  }
-
-  exec { 'install_dependencies':
-    command => "sudo apt-get install -y python2.7-dev python-pip supervisor ${extra_apt_packages}",
-    path => $path,
-    require => Exec['apt-get_update']
-  }
+  $enhancers = [ 'python2.7-dev', 'python-pip', 'supervisor']
+  package { $extra_apt_packages: ensure => 'installed' }
+  package { $enhancers: ensure => 'installed' }
 
   exec {'install_celery':
     command => "sudo pip install Celery ${extra_pip_packages}",
     path => $path,
-    require => Exec['install_dependencies']
+    require => Package[$enhancers]
   }
 
   celery_file{ $worker_number:}

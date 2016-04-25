@@ -2,18 +2,15 @@ class bigcouch{
   $home_folder = '$templ_home_folder'
   $path = ['/usr/bin', '/usr', '/usr/sbin', '/sbin', '/usr/local/sbin', '/bin']
 
-  exec {"install_dep":
-    command => "sudo apt-get install -y erlang-reltool libicu-dev libmozjs-dev make git libicu-dev erlang-base erlang-dev erlang-eunit erlang-nox libmozjs-dev",
-    path => $path,
-    user => root
-  }
+  $enhancers = [ 'erlang-reltool', 'libicu-dev', 'libmozjs-dev', 'make', 'git', 'libicu-dev', 'erlang-base', 'erlang-dev', 'erlang-eunit', 'erlang-nox', 'libmozjs-dev']
+  package { $extra_apt_packages: ensure => 'installed' }
 
   exec {"clone_repo":
     command => "git clone https://github.com/cloudant/bigcouch",
     cwd => "${home_folder}",
     user => root,
     path => $path,
-    require => Exec["install_dep"]
+    require => Package[$enhancers]
   }
 
   exec {'configure':

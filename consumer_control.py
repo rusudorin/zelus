@@ -188,8 +188,8 @@ def show_report():
 
         for j in range(0, config.stormtrooper_numbers[storm_ip]):
             with open("report_stormtrooper{0}_{1}.json".format(i, j)) as f:
-                plm = f.read()
-                temp_list = json.loads(plm)
+                fp = f.read()
+                temp_list = json.loads(fp)
 
                 for key, value in temp_list:
                     while key in timestamp_dict:
