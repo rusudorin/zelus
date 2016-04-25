@@ -52,7 +52,7 @@ def deploy_stormtrooper(user, host, nosql, worker_name, concurrency, worker_numb
         "cassandra": "",
         "hbase": "",
         "redis": "",
-        "riak": "build-essential libssl-dev libffi-dev python-dev",
+        "riak": ["build-essential", "libssl-dev", "libffi-dev", "python-dev"],
         "bigcouch": ""
     }
 
