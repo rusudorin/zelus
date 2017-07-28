@@ -45,8 +45,8 @@ Now let's assume you have the following IPs available: 1.1.1.1 -> 1.1.1.21
 
 You then decide that you will assign them as follows:
 
-1.1.1.1 -> 1.1.1.3  -> Rebels (aka DBs)
-1.1.1.4 -> 1.1.1.6  -> Emperors
-1.1.1.7 -> 1.1.1.21 -> Stormtroopers
+- 1.1.1.1 -> 1.1.1.3  -> Rebels (aka DBs)
+- 1.1.1.4 -> 1.1.1.6  -> Emperors
+- 1.1.1.7 -> 1.1.1.21 -> Stormtroopers
 
 the config.py for this case can be found in the example folder.
